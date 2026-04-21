@@ -17,8 +17,12 @@ export default function ContributionChart() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     const fetchStats = async () => {
+
       setLoading(true);
       try {
         const { data: res } = await api.get(`/users/stats?view=${view}`);
@@ -57,13 +61,14 @@ export default function ContributionChart() {
       </header>
 
       <div className="h-[300px] w-full">
-        {loading ? (
+        {!mounted || loading ? (
            <div className="h-full w-full flex items-center justify-center">
               <div className="h-8 w-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
            </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <AreaChart data={data}>
+
               <defs>
                 <linearGradient id="colorNotes" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />

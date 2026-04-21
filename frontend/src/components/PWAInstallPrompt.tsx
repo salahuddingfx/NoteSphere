@@ -11,11 +11,15 @@ export default function PWAInstallPrompt() {
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setIsVisible(true);
+      // Show after 5 seconds to not overwhelm the user
+      const timer = setTimeout(() => {
+        const isDismissed = localStorage.getItem("pwa_dismissed");
+        if (!isDismissed) setIsVisible(true);
+      }, 5000);
+      return () => clearTimeout(timer);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
@@ -29,40 +33,46 @@ export default function PWAInstallPrompt() {
     }
   };
 
+  const handleDismiss = () => {
+    setIsVisible(false);
+    localStorage.setItem("pwa_dismissed", "true");
+  };
+
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
-          className="fixed bottom-6 right-6 z-50 max-w-sm rounded-2xl border border-white/10 bg-zinc-900/90 p-5 backdrop-blur-xl shadow-2xl"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }}
+          className="fixed bottom-10 left-10 z-[110] max-w-sm rounded-[2rem] border border-white/10 bg-zinc-950/90 p-8 backdrop-blur-3xl shadow-2xl"
         >
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 flex-shrink-0 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-bold text-xl">
-              N
+          <div className="flex items-center gap-5">
+            <div className="h-14 w-14 flex-shrink-0 rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-indigo-600/30">
+               N
             </div>
             <div>
-              <h4 className="text-white font-semibold">Install NoteSphere</h4>
-              <p className="text-zinc-400 text-sm">Add to home screen for a premium experience.</p>
+              <h4 className="text-white font-bold text-lg tracking-tight">NoteSphere App</h4>
+              <p className="text-zinc-500 text-xs mt-1 leading-relaxed">Experience the Nexus directly from your home screen.</p>
             </div>
           </div>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-8 flex gap-3">
             <button
               onClick={handleInstall}
-              className="flex-1 rounded-lg bg-white py-2 text-sm font-bold text-black hover:bg-zinc-200 transition-colors"
+              className="flex-1 rounded-xl bg-white py-3 text-xs font-black uppercase tracking-widest text-black hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               Install App
             </button>
             <button
-              onClick={() => setIsVisible(false)}
-              className="rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors"
+              onClick={handleDismiss}
+              className="rounded-xl border border-white/10 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-colors"
             >
-              Later
+              Skip
             </button>
           </div>
         </motion.div>
       )}
     </AnimatePresence>
+
   );
 }

@@ -21,14 +21,16 @@ export default function MainNav() {
   const { user, isAuthenticated } = useAuthStore();
 
   return (
-    <header className="sticky top-4 z-50 mx-auto mb-12 w-full max-w-6xl px-4">
-      <nav className="flex items-center justify-between rounded-3xl border border-white/10 bg-black/60 px-6 py-4 backdrop-blur-2xl shadow-2xl">
+    <header className="fixed top-8 left-0 right-0 z-50 px-4 pointer-events-none">
+      <nav className="mx-auto w-full max-w-6xl flex items-center justify-between rounded-[2rem] border border-white/10 bg-black/40 px-8 py-5 backdrop-blur-3xl shadow-2xl pointer-events-auto">
+
         <Link href="/" className="text-xl font-black tracking-tighter text-white">
           NoteSphere<span className="text-indigo-500">.</span>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden xl:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-1">
+
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -45,10 +47,23 @@ export default function MainNav() {
               </Link>
             );
           })}
+          {(user?.role === "admin" || user?.role === "moderator") && (
+            <Link
+              href="/admin"
+              className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                pathname.startsWith("/admin")
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
+                  : "text-indigo-400 hover:text-white hover:bg-indigo-500/10"
+              }`}
+            >
+              Admin
+            </Link>
+          )}
         </div>
 
+
         {/* User Profile / Auth */}
-        <div className="hidden xl:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-4">
           {isAuthenticated ? (
             <Link href="/dashboard" className="flex items-center gap-3 rounded-2xl bg-white/5 p-1 pr-4 border border-white/5 hover:border-white/10 transition-all">
               <img 
@@ -73,7 +88,7 @@ export default function MainNav() {
         {/* Mobile Toggle */}
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white xl:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white lg:hidden"
         >
           {isOpen ? (
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -90,8 +105,9 @@ export default function MainNav() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute left-4 right-4 top-24 z-40 rounded-3xl border border-white/10 bg-black/90 p-6 backdrop-blur-2xl xl:hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+            className="absolute left-4 right-4 top-24 z-40 rounded-3xl border border-white/10 bg-black/90 p-6 backdrop-blur-2xl lg:hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-auto"
           >
+
             <div className="grid gap-2">
               {isAuthenticated && (
                 <Link 
@@ -119,7 +135,6 @@ export default function MainNav() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  prefetch={false}
                   onClick={() => setIsOpen(false)}
                   className={`rounded-2xl px-6 py-4 text-sm font-black uppercase tracking-[0.2em] transition-all ${
                     pathname === item.href
@@ -134,13 +149,13 @@ export default function MainNav() {
               {!isAuthenticated && (
                 <Link
                   href="/login"
-                  prefetch={false}
                   onClick={() => setIsOpen(false)}
                   className="mt-4 rounded-2xl bg-white px-6 py-4 text-center text-sm font-black uppercase tracking-[0.2em] text-black"
                 >
                   Sign In
                 </Link>
               )}
+
             </div>
           </motion.div>
         )}

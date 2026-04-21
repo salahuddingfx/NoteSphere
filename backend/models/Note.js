@@ -20,10 +20,21 @@ const noteSchema = new mongoose.Schema(
       trim: true,
       maxlength: 2000,
     },
+    category: {
+      type: String,
+      enum: ["Hand-written", "Digital", "Exam Paper", "Assignment", "Lab Report", "Other"],
+      default: "Digital",
+    },
+
     fileUrl: {
       type: String,
       required: [true, "File URL is required"],
     },
+    coverUrl: {
+      type: String,
+      trim: true,
+    },
+
     publicId: {
       type: String,
       required: [true, "Cloudinary public ID is required"],
@@ -79,6 +90,11 @@ const noteSchema = new mongoose.Schema(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    aiSummary: {
+      type: String,
+      trim: true,
+      maxlength: 1000,
     },
   },
   { timestamps: true }

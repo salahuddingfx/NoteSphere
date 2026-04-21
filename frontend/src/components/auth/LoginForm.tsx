@@ -80,6 +80,14 @@ export default function LoginForm() {
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
+      <div className="flex justify-end">
+         <Link href="/forgot-password" className="text-xs text-zinc-500 hover:text-cyan-400 transition-colors">
+            Forgot access key?
+         </Link>
+      </div>
+
+
+
       <button
         type="submit"
         disabled={loading}

@@ -5,18 +5,29 @@ import MainNav from "@/components/ui/MainNav";
 import ImageCropper from "@/components/upload/ImageCropper";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { motion, AnimatePresence } from "framer-motion";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon } from "lucide-react";
+import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
 
 export default function UploadPage() {
+  const router = useRouter();
+  const { showToast } = useToast();
+
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [noteFile, setNoteFile] = useState<File | null>(null);
   const [isCropping, setIsCropping] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [department, setDepartment] = useState("CSE");
   const [semester, setSemester] = useState("Semester 1");
   const [subject, setSubject] = useState("");
   const [subjectCode, setSubjectCode] = useState("");
   const [teacher, setTeacher] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -27,14 +38,62 @@ export default function UploadPage() {
     }
   };
 
+  const handleNoteFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNoteFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!title || !subject || !noteFile) {
+      showToast("Please fill required fields and upload the note file.", "error");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("department", department);
+      formData.append("semester", semester);
+      formData.append("subject", subject);
+      formData.append("subjectCode", subjectCode);
+      formData.append("teacher", teacher);
+      formData.append("file", noteFile);
+      // If we have a cropped cover image, we should ideally handle it too, 
+      // but for now the backend expects the 'file' to be the note itself.
+
+      await api.post("/notes", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+
+      router.push("/notes");
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert("Upload failed. Check console.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black px-4 py-12 sm:px-6 lg:px-10">
       <MainNav />
       
       <section className="mx-auto w-full max-w-4xl mt-12">
         <header className="mb-12">
-          <p className="text-xs uppercase tracking-[0.3em] text-indigo-400 font-bold">Contribution Hub</p>
-          <h1 className="text-5xl font-bold text-white mt-2">Publish your notes.</h1>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3 mb-4"
+          >
+            <div className="h-10 w-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+               <Sparkles className="w-5 h-5 animate-pulse" />
+            </div>
+            <p className="text-xs uppercase tracking-[0.3em] text-indigo-400 font-bold">Contribution Hub</p>
+          </motion.div>
+          <h1 className="text-5xl font-bold text-white mt-2 tracking-tight">Publish your notes.</h1>
           <p className="text-zinc-500 mt-4 text-lg">Your knowledge helps others grow. Ensure your notes are clear and well-titled.</p>
         </header>
 
@@ -44,6 +103,8 @@ export default function UploadPage() {
               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Title</label>
               <input 
                 type="text" 
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Organic Chemistry - Semester 3" 
                 className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
               />
@@ -86,7 +147,7 @@ export default function UploadPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <CustomSelect 
                 label="Department" 
-                options={["CSE", "EEE", "BBA", "Textile"]} 
+                options={["CSE", "EEE", "BBA", "Textile", "Civil", "Mechanical", "Architecture", "Pharmacy"]} 
                 value={department} 
                 onChange={setDepartment} 
               />
@@ -102,50 +163,80 @@ export default function UploadPage() {
               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Description</label>
               <textarea 
                 rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="What covers these notes?" 
                 className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
               />
             </div>
           </div>
 
-          <div className="lg:col-span-2 space-y-6">
-             <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover</label>
-             <div className="aspect-[3/4] rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
-                {croppedImage ? (
-                  <img src={croppedImage} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
-                ) : (
-                  <>
-                    <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
-                      <svg className="w-6 h-6 text-zinc-400 group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <div className="lg:col-span-2 space-y-8">
+             <div className="space-y-4">
+               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Asset (PDF/DOC)</label>
+               <div className="aspect-video rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
+                  {noteFile ? (
+                    <div className="flex flex-col items-center">
+                       <FileText className="w-10 h-10 text-indigo-400 mb-2" />
+                       <p className="text-white font-bold truncate max-w-[200px]">{noteFile.name}</p>
+                       <p className="text-[10px] text-zinc-500 uppercase mt-1">{(noteFile.size / (1024 * 1024)).toFixed(2)} MB</p>
                     </div>
-                    <p className="text-zinc-200 font-bold">Select Cover Image</p>
-                    <p className="text-xs text-zinc-500 mt-2">JPG, PNG up to 5MB</p>
-                  </>
-                )}
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleFileChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer" 
-                />
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-zinc-500 group-hover:text-indigo-400 mb-4 transition-colors" />
+                      <p className="text-zinc-200 font-bold">Select PDF/Note</p>
+                      <p className="text-xs text-zinc-500 mt-2">Up to 50MB supported</p>
+                    </>
+                  )}
+                  <input 
+                    type="file" 
+                    accept=".pdf,.doc,.docx" 
+                    onChange={handleNoteFileChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer" 
+                  />
+               </div>
              </div>
-             {croppedImage && (
-               <button 
-                onClick={() => setIsCropping(true)}
-                className="w-full py-3 rounded-xl border border-white/10 text-zinc-400 font-bold hover:text-white transition-colors"
-               >
-                 Re-edit Image
-               </button>
-             )}
+
+             <div className="space-y-4">
+               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover (Optional)</label>
+               <div className="aspect-[3/4] rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
+                  {croppedImage ? (
+                    <img src={croppedImage} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
+                  ) : (
+                    <>
+                      <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
+                        <ImageIcon className="w-6 h-6 text-zinc-400 group-hover:text-indigo-400" />
+                      </div>
+                      <p className="text-zinc-200 font-bold">Select Cover</p>
+                    </>
+                  )}
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer" 
+                  />
+               </div>
+             </div>
           </div>
         </div>
 
         <div className="mt-12 flex justify-end">
-           <button className="px-12 py-4 rounded-2xl bg-white text-black font-black hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-             Submit to Vault
+           <button 
+            disabled={loading}
+            onClick={handleSubmit}
+            className="group px-12 py-4 rounded-2xl bg-white text-black font-black hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center gap-3 disabled:opacity-50 disabled:scale-100"
+           >
+             {loading ? (
+               <Loader2 className="w-5 h-5 animate-spin" />
+             ) : (
+               <CheckCircle className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
+             )}
+             {loading ? "Publishing..." : "Submit to Vault"}
            </button>
         </div>
       </section>
+
 
       <AnimatePresence>
         {isCropping && selectedFile && (

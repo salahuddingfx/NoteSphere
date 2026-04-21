@@ -4,12 +4,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function IntroLoader() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2500);
-    return () => clearTimeout(timer);
+    const hasLoaded = sessionStorage.getItem("intro_loaded");
+    if (!hasLoaded) {
+      setLoading(true);
+      const timer = setTimeout(() => {
+        setLoading(false);
+        sessionStorage.setItem("intro_loaded", "true");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
   }, []);
+
 
   return (
     <AnimatePresence>

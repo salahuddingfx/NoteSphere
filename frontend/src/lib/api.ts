@@ -31,7 +31,9 @@ export type AuthUser = {
     contact: string;
   };
   lastLogin?: string | null;
+  streakCount: number;
 };
+
 
 export type AuthPayload = {
   name?: string;

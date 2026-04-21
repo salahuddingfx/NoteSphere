@@ -3,6 +3,9 @@ const Note = require("../models/Note");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const { cloudinary, isCloudinaryConfigured } = require("../config/cloudinary");
+const { openai, DEFAULT_MODEL } = require("../config/ai.config");
+
+
 
 const toSlug = (value) =>
   slugify(value, {
@@ -49,7 +52,8 @@ const inferNoteFileType = (mimetype) => {
 };
 
 const createNote = asyncHandler(async (req, res) => {
-  const { title, description, department, semester, subject, subjectCode, teacher, tags } = req.body;
+  const { title, description, department, semester, subject, subjectCode, teacher, category, tags } = req.body;
+
 
   if (!req.file) {
     throw new ApiError(400, "File is required");
@@ -79,9 +83,11 @@ const createNote = asyncHandler(async (req, res) => {
     subject,
     subjectCode,
     teacher,
+    category: category || "Digital",
     tags: normalizedTags,
     author: req.user._id,
   });
+
 
   res.status(201).json({
     success: true,
@@ -91,7 +97,7 @@ const createNote = asyncHandler(async (req, res) => {
 });
 
 const getNotes = asyncHandler(async (req, res) => {
-  const { search, department, semester, subject, subjectCode, teacher, fileType, tag, verified, sort = "latest" } = req.query;
+  const { search, department, semester, subject, subjectCode, teacher, fileType, category, tag, verified, sort = "latest" } = req.query;
 
   const query = {};
 
@@ -101,6 +107,8 @@ const getNotes = asyncHandler(async (req, res) => {
 
   if (department) query.department = department;
   if (semester) query.semester = semester;
+  if (category) query.category = category;
+
   if (subject) query.subject = subject;
   if (subjectCode) query.subjectCode = subjectCode;
   if (teacher) query.teacher = teacher;
@@ -254,6 +262,64 @@ const trackDownload = asyncHandler(async (req, res) => {
   });
 });
 
+const generateSummary = asyncHandler(async (req, res) => {
+  const note = await Note.findById(req.params.id);
+
+  if (!note) {
+    throw new ApiError(404, "Note not found");
+  }
+
+  if (note.aiSummary) {
+    return res.status(200).json({
+      success: true,
+      summary: note.aiSummary,
+    });
+  }
+
+  const prompt = `Summarize this academic note in 3-4 concise bullet points. 
+  Title: ${note.title}
+  Subject: ${note.subject}
+  Description: ${note.description}
+  Tags: ${note.tags.join(", ")}
+  
+  Focus on key learning outcomes and main concepts. Keep it professional and student-friendly.`;
+
+  try {
+    const Setting = require("../models/Setting");
+    const settings = await Setting.findOne();
+    const modelToUse = settings?.activeModel || DEFAULT_MODEL;
+
+    const response = await openai.chat.completions.create({
+      model: modelToUse,
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert academic summarizer. Provide concise, helpful summaries in 3-4 bullet points."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+    });
+
+
+    const summary = response.choices[0].message.content;
+
+    note.aiSummary = summary;
+    await note.save();
+
+    res.status(200).json({
+      success: true,
+      summary,
+    });
+  } catch (error) {
+    console.error("OpenRouter Error:", error);
+    throw new ApiError(500, "Failed to generate AI summary via OpenRouter");
+  }
+});
+
+
 module.exports = {
   createNote,
   getNotes,
@@ -262,4 +328,6 @@ module.exports = {
   deleteNote,
   toggleLike,
   trackDownload,
+  generateSummary,
 };
+

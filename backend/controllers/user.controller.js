@@ -16,13 +16,19 @@ const getLeaderboard = asyncHandler(async (req, res) => {
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
-  const { bio, socials, avatar } = req.body;
+  const { name, username, email, password, bio, socials, avatar, department } = req.body;
 
-  let user = await User.findByIdAndUpdate(
-    req.user.id,
-    { bio, socials, avatar },
-    { returnDocument: "after", runValidators: true }
-  );
+  const user = await User.findById(req.user.id);
+  if (!user) throw new ApiError(404, "User not found");
+
+  if (name) user.name = name;
+  if (username) user.username = username;
+  if (email) user.email = email;
+  if (password) user.password = password;
+  if (bio) user.bio = bio;
+  if (avatar) user.avatar = avatar;
+  if (department) user.department = department;
+  if (socials) user.socials = { ...user.socials, ...socials };
 
   let bonusMessage = "";
 
@@ -39,9 +45,10 @@ const updateProfile = asyncHandler(async (req, res) => {
     user.xp += 500;
     user.isProfileCompleted = true;
     user.level = Math.floor(user.xp / 500) + 1;
-    await user.save();
     bonusMessage = "🎯 Milestone Reached! +500 XP for Profile Completion.";
   }
+
+  await user.save();
 
   res.status(200).json({
     success: true,
@@ -49,6 +56,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     user,
   });
 });
+
 
 const uploadAvatarPhoto = asyncHandler(async (req, res) => {
   if (!req.file) {
@@ -131,9 +139,16 @@ const getContributionStats = asyncHandler(async (req, res) => {
   });
 });
 
+const getMyNotes = asyncHandler(async (req, res) => {
+  const notes = await Note.find({ author: req.user.id }).sort({ createdAt: -1 });
+  res.status(200).json({ success: true, notes });
+});
+
 module.exports = {
   getLeaderboard,
   updateProfile,
   uploadAvatarPhoto,
   getContributionStats,
+  getMyNotes
 };
+

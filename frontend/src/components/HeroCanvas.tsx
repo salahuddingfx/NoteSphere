@@ -17,8 +17,9 @@ function AnimatedSphere() {
 
   return (
     <Float speed={2} rotationIntensity={1} floatIntensity={2}>
-      <Sphere ref={meshRef} args={[1, 100, 100]} scale={2.4}>
+      <Sphere ref={meshRef} args={[1, 64, 64]} scale={2.4}>
         <MeshDistortMaterial
+
           color="#4338ca"
           attach="material"
           distort={0.4}
@@ -46,7 +47,11 @@ export default function HeroCanvas() {
 
   return (
     <div ref={containerRef} className="absolute inset-0 -z-10 h-full w-full">
-      <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
+      <Canvas 
+        dpr={[1, 1.5]} 
+        gl={{ antialias: false, powerPreference: "high-performance" }}
+        camera={{ position: [0, 0, 5], fov: 75 }}
+      >
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <pointLight position={[-10, -10, -5]} intensity={0.5} color="#06b6d4" />
@@ -55,3 +60,4 @@ export default function HeroCanvas() {
     </div>
   );
 }
+

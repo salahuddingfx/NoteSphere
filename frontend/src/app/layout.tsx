@@ -65,6 +65,12 @@ import IntroLoader from "@/components/IntroLoader";
 import CustomCursor from "@/components/ui/CustomCursor";
 import Footer from "@/components/ui/Footer";
 import AuthInitializer from "@/components/auth/AuthInitializer";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import { ToastProvider } from "@/components/ui/Toast";
+import NexusAI from "@/components/ai/NexusAI";
+import MainNav from "@/components/ui/MainNav";
+
+
 
 export default function RootLayout({
   children,
@@ -74,12 +80,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={spaceGrotesk.className} suppressHydrationWarning>
-        <AuthInitializer />
-        <IntroLoader />
-        <CustomCursor />
-        {children}
-        <Footer />
-        <PWAInstallPrompt />
+        <ToastProvider>
+          <AuthInitializer />
+          <IntroLoader />
+          <CustomCursor />
+          <MainNav />
+          <div className="pt-32">
+            {children}
+          </div>
+
+
+
+          <NexusAI />
+          <ScrollToTop />
+          <Footer />
+
+
+          <PWAInstallPrompt />
+        </ToastProvider>
       </body>
     </html>
   );
