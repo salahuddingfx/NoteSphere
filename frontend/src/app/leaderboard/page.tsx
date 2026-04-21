@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import MainNav from "@/components/ui/MainNav";
 import { motion } from "framer-motion";
