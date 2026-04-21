@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ns-bg: #06070b;
+  --ns-surface: #0f1118;
+  --ns-text: #f4f4f5;
+  --ns-muted: #a1a1aa;
+  --ns-cyan: #22d3ee;
+}
+
+body {
+  color: var(--ns-text);
+  background-color: var(--ns-bg);
+  background-image: radial-gradient(circle at 8% -2%, rgba(34, 211, 238, 0.08), transparent 30%),
+    radial-gradient(circle at 88% 0%, rgba(251, 191, 36, 0.07), transparent 28%);
+  min-height: 100vh;
+}
+
+@layer base {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1f2128;
+    border-radius: 5px;
+    border: 2px solid #000;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4f46e5;
+  }
+}

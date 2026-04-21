@@ -1,0 +1,259 @@
+const slugify = require("slugify");
+const Note = require("../models/Note");
+const ApiError = require("../utils/ApiError");
+const asyncHandler = require("../utils/asyncHandler");
+const { cloudinary, isCloudinaryConfigured } = require("../config/cloudinary");
+
+const toSlug = (value) =>
+  slugify(value, {
+    lower: true,
+    strict: true,
+    trim: true,
+  });
+
+const generateUniqueSlug = async (title) => {
+  const baseSlug = toSlug(title);
+  let finalSlug = baseSlug;
+  let suffix = 1;
+
+  while (await Note.findOne({ slug: finalSlug })) {
+    finalSlug = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  return finalSlug;
+};
+
+const uploadToCloudinary = async (fileBuffer, fileType) => {
+  if (!isCloudinaryConfigured) {
+    throw new ApiError(500, "Cloudinary is not configured. Add Cloudinary environment variables.");
+  }
+
+  const dataUri = `data:${fileType};base64,${fileBuffer.toString("base64")}`;
+
+  return cloudinary.uploader.upload(dataUri, {
+    folder: "notesphere/notes",
+    resource_type: "auto",
+    use_filename: true,
+    unique_filename: true,
+    overwrite: false,
+    quality: "auto",
+    fetch_format: "auto",
+  });
+};
+
+const inferNoteFileType = (mimetype) => {
+  if (mimetype === "application/pdf") return "pdf";
+  if (["image/jpeg", "image/png", "image/webp"].includes(mimetype)) return "image";
+  return "text";
+};
+
+const createNote = asyncHandler(async (req, res) => {
+  const { title, description, department, semester, subject, tags } = req.body;
+
+  if (!req.file) {
+    throw new ApiError(400, "File is required");
+  }
+
+  if (!title || !description || !department || !semester || !subject) {
+    throw new ApiError(400, "Missing required fields");
+  }
+
+  const slug = await generateUniqueSlug(title);
+  const uploadResult = await uploadToCloudinary(req.file.buffer, req.file.mimetype);
+  const normalizedTags = Array.isArray(tags)
+    ? tags
+    : typeof tags === "string"
+      ? tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+      : [];
+
+  const note = await Note.create({
+    title,
+    slug,
+    description,
+    fileUrl: uploadResult.secure_url,
+    publicId: uploadResult.public_id,
+    fileType: inferNoteFileType(req.file.mimetype),
+    department,
+    semester,
+    subject,
+    tags: normalizedTags,
+    author: req.user._id,
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Note uploaded successfully",
+    note,
+  });
+});
+
+const getNotes = asyncHandler(async (req, res) => {
+  const { search, department, semester, subject, fileType, tag, verified, sort = "latest" } = req.query;
+
+  const query = {};
+
+  if (search) {
+    query.$text = { $search: String(search) };
+  }
+
+  if (department) query.department = department;
+  if (semester) query.semester = semester;
+  if (subject) query.subject = subject;
+  if (fileType) query.fileType = fileType;
+  if (tag) query.tags = tag;
+  if (typeof verified !== "undefined") query.isVerified = verified === "true";
+
+  let sortBy = { createdAt: -1 };
+  if (sort === "trending") sortBy = { downloads: -1, createdAt: -1 };
+  if (sort === "verified") query.isVerified = true;
+
+  const notes = await Note.find(query)
+    .populate("author", "name department semester role")
+    .sort(sortBy)
+    .limit(40);
+
+  res.status(200).json({
+    success: true,
+    count: notes.length,
+    notes,
+  });
+});
+
+const getNoteBySlug = asyncHandler(async (req, res) => {
+  const note = await Note.findOne({ slug: req.params.slug }).populate("author", "name department semester role");
+
+  if (!note) {
+    throw new ApiError(404, "Note not found");
+  }
+
+  res.status(200).json({
+    success: true,
+    note,
+  });
+});
+
+const updateNote = asyncHandler(async (req, res) => {
+  const note = await Note.findById(req.params.id);
+
+  if (!note) {
+    throw new ApiError(404, "Note not found");
+  }
+
+  const isOwner = note.author.toString() === req.user._id.toString();
+  const isAdmin = ["admin", "moderator"].includes(req.user.role);
+
+  if (!isOwner && !isAdmin) {
+    throw new ApiError(403, "You can only edit your own notes");
+  }
+
+  const { title, description, department, semester, subject, tags, isVerified } = req.body;
+
+  if (title && title !== note.title) {
+    note.title = title;
+    note.slug = await generateUniqueSlug(title);
+  }
+
+  if (description) note.description = description;
+  if (department) note.department = department;
+  if (semester) note.semester = semester;
+  if (subject) note.subject = subject;
+  if (typeof tags !== "undefined") {
+    note.tags = Array.isArray(tags)
+      ? tags
+      : String(tags)
+          .split(",")
+          .map((tagItem) => tagItem.trim())
+          .filter(Boolean);
+  }
+
+  if (typeof isVerified !== "undefined" && isAdmin) {
+    note.isVerified = String(isVerified) === "true";
+  }
+
+  await note.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Note updated successfully",
+    note,
+  });
+});
+
+const deleteNote = asyncHandler(async (req, res) => {
+  const note = await Note.findById(req.params.id);
+
+  if (!note) {
+    throw new ApiError(404, "Note not found");
+  }
+
+  const isOwner = note.author.toString() === req.user._id.toString();
+  const isAdmin = ["admin", "moderator"].includes(req.user.role);
+
+  if (!isOwner && !isAdmin) {
+    throw new ApiError(403, "You can only delete your own notes");
+  }
+
+  if (isCloudinaryConfigured && note.publicId) {
+    await cloudinary.uploader.destroy(note.publicId, { resource_type: "raw" }).catch(() => {});
+  }
+
+  await note.deleteOne();
+
+  res.status(200).json({
+    success: true,
+    message: "Note deleted successfully",
+  });
+});
+
+const toggleLike = asyncHandler(async (req, res) => {
+  const note = await Note.findById(req.params.id);
+
+  if (!note) {
+    throw new ApiError(404, "Note not found");
+  }
+
+  const userId = req.user._id.toString();
+  const likedIndex = note.likes.findIndex((id) => id.toString() === userId);
+
+  if (likedIndex >= 0) {
+    note.likes.splice(likedIndex, 1);
+  } else {
+    note.likes.push(req.user._id);
+  }
+
+  await note.save();
+
+  res.status(200).json({
+    success: true,
+    liked: likedIndex < 0,
+    likesCount: note.likes.length,
+  });
+});
+
+const trackDownload = asyncHandler(async (req, res) => {
+  const note = await Note.findById(req.params.id);
+
+  if (!note) {
+    throw new ApiError(404, "Note not found");
+  }
+
+  note.downloads += 1;
+  await note.save();
+
+  res.status(200).json({
+    success: true,
+    downloads: note.downloads,
+    fileUrl: note.fileUrl,
+  });
+});
+
+module.exports = {
+  createNote,
+  getNotes,
+  getNoteBySlug,
+  updateNote,
+  deleteNote,
+  toggleLike,
+  trackDownload,
+};

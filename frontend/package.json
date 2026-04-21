@@ -1,0 +1,41 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.88.0",
+    "@react-three/fiber": "^8.13.0",
+    "@types/three": "^0.184.0",
+    "axios": "^1.15.1",
+    "buffer": "^6.0.3",
+    "framer-motion": "^12.38.0",
+    "gsap": "^3.15.0",
+    "next": "^14.2.33",
+    "next-pwa": "^5.6.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-easy-crop": "^5.5.7",
+    "react-hook-form": "^7.72.1",
+    "recharts": "^3.8.1",
+    "three": "^0.160.0",
+    "workbox-build": "^7.4.0",
+    "workbox-webpack-plugin": "^7.4.0",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "^14.2.33",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
