@@ -51,6 +51,8 @@ const register = asyncHandler(async (req, res) => {
     password,
     department,
     semester,
+    xp: 100, // Account Opening Bonus
+    level: 1,
   });
 
   const token = signToken({ id: user._id, role: user.role });
@@ -58,7 +60,7 @@ const register = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: "Registration successful",
+    message: "Welcome to NoteSphere! +100 XP awarded.",
     user: sanitizeUser(user),
   });
 });
@@ -83,12 +85,27 @@ const login = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid credentials");
   }
 
+  // Daily Login Bonus Logic
+  const today = new Date().setHours(0, 0, 0, 0);
+  const lastLogin = user.lastLogin ? new Date(user.lastLogin).setHours(0, 0, 0, 0) : null;
+
+  let message = "Login successful";
+  if (!lastLogin || lastLogin < today) {
+    user.xp += 50;
+    user.lastLogin = new Date();
+    message = "Daily Login Reward! +50 XP awarded.";
+  }
+
+  // Auto-leveling logic: 1 Level per 500 XP
+  user.level = Math.floor(user.xp / 500) + 1;
+  await user.save();
+
   const token = signToken({ id: user._id, role: user.role });
   res.cookie("token", token, cookieOptions);
 
   res.status(200).json({
     success: true,
-    message: "Login successful",
+    message,
     user: sanitizeUser(user),
   });
 });
