@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import AuthGate from "@/components/auth/AuthGate";
 import { useAuthStore } from "@/store/auth.store";
@@ -40,15 +41,45 @@ export default function DashboardPage() {
 
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {[
-              { label: "Department", val: user?.department || "General", color: "indigo" },
-              { label: "Academic Semester", val: user?.semester || "N/A", color: "cyan" },
-              { label: "Total Rank XP", val: `${user?.xp || 0} XP`, color: "amber" },
+              { label: "Department", val: user?.department || "General" },
+              { label: "Academic Semester", val: user?.semester || "N/A" },
+              { label: "Total Rank XP", val: `${user?.xp || 0} XP` },
             ].map((stat) => (
               <article key={stat.label} className="rounded-2xl border border-white/5 bg-white/5 p-6 hover:border-white/10 transition-colors">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black">{stat.label}</p>
                 <p className="mt-3 text-2xl font-bold text-white">{stat.val}</p>
               </article>
             ))}
+          </div>
+
+          {/* Quick Actions */}
+          <div className="mt-10">
+             <h3 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-600 mb-6">Quick Actions</h3>
+             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <Link href="/upload" className="group rounded-2xl border border-indigo-500/10 bg-indigo-500/5 p-6 hover:bg-indigo-500 transition-all hover:scale-[1.02]">
+                   <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:bg-white group-hover:text-indigo-500 transition-colors">
+                         🚀
+                      </div>
+                      <div>
+                         <p className="text-sm font-bold text-white group-hover:text-white">Share New Note</p>
+                         <p className="text-xs text-indigo-400 group-hover:text-white/80">Earn +50 XP instantly</p>
+                      </div>
+                   </div>
+                </Link>
+
+                <div className="group rounded-2xl border border-white/5 bg-white/5 p-6 hover:border-white/10 transition-all cursor-not-allowed opacity-50">
+                   <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400">
+                         💎
+                      </div>
+                      <div>
+                         <p className="text-sm font-bold text-zinc-300">Request Note</p>
+                         <p className="text-xs text-zinc-500">Ask the community</p>
+                      </div>
+                   </div>
+                </div>
+             </div>
           </div>
 
           <ContributionChart />
