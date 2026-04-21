@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
 const asyncHandler = require("../utils/asyncHandler");
+const ApiError = require("../utils/ApiError");
 
 const getLeaderboard = asyncHandler(async (req, res) => {
   const users = await User.find()
@@ -93,7 +94,7 @@ const getContributionStats = asyncHandler(async (req, res) => {
   const stats = await Note.aggregate([
     {
       $match: {
-        author: new mongoose.Types.ObjectId(userId),
+        author: req.user._id,
         createdAt: { $gte: dateRange },
       },
     },
@@ -107,8 +108,8 @@ const getContributionStats = asyncHandler(async (req, res) => {
   ]);
 
   const formattedStats = stats.map(s => ({
-    name: s._id.toString(),
-    notes: s.count
+    name: String(s._id || "N/A"),
+    notes: s.count || 0
   }));
 
   res.status(200).json({
