@@ -94,10 +94,33 @@ export default function MainNav() {
             className="absolute left-4 right-4 top-24 z-40 rounded-3xl border border-white/10 bg-black/90 p-6 backdrop-blur-2xl xl:hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
           >
             <div className="grid gap-2">
+              {isAuthenticated && (
+                <Link 
+                  href="/dashboard" 
+                  onClick={() => setIsOpen(false)}
+                  className="mb-4 flex items-center gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-4"
+                >
+                  <img 
+                    src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`} 
+                    className="h-12 w-12 rounded-2xl border border-white/10 object-cover shadow-xl" 
+                    alt="Profile" 
+                  />
+                  <div>
+                    <p className="text-sm font-black text-white uppercase tracking-widest">{user?.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-black text-indigo-400 uppercase">LVL {user?.level}</span>
+                      <span className="h-1 w-1 rounded-full bg-zinc-700" />
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase">{user?.xp} XP</span>
+                    </div>
+                  </div>
+                </Link>
+              )}
+
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
+                  prefetch={false}
                   onClick={() => setIsOpen(false)}
                   className={`rounded-2xl px-6 py-4 text-sm font-black uppercase tracking-[0.2em] transition-all ${
                     pathname === item.href
@@ -108,13 +131,17 @@ export default function MainNav() {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                href="/login"
-                onClick={() => setIsOpen(false)}
-                className="mt-4 rounded-2xl bg-white px-6 py-4 text-center text-sm font-black uppercase tracking-[0.2em] text-black"
-              >
-                Sign In
-              </Link>
+
+              {!isAuthenticated && (
+                <Link
+                  href="/login"
+                  prefetch={false}
+                  onClick={() => setIsOpen(false)}
+                  className="mt-4 rounded-2xl bg-white px-6 py-4 text-center text-sm font-black uppercase tracking-[0.2em] text-black"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
