@@ -109,9 +109,33 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   });
 });
 
+const verifyAdmin = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+
+  if (!password) {
+    throw new ApiError(400, "Password is required");
+  }
+
+  const user = await User.findById(req.user.id).select("+password");
+  if (user.role !== "admin") {
+    throw new ApiError(403, "Access denied. Admins only.");
+  }
+
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    throw new ApiError(401, "Invalid password");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Admin verified successfully",
+  });
+});
+
 module.exports = {
   register,
   login,
   logout,
   getCurrentUser,
+  verifyAdmin,
 };

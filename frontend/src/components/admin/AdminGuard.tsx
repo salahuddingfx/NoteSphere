@@ -4,24 +4,25 @@ import { useAuthStore } from "@/store/auth.store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, ReactNode } from "react";
 import { motion } from "framer-motion";
+import AdminReAuth from "./AdminReAuth";
 
 export default function AdminGuard({ children }: { children: ReactNode }) {
   const { user, isAuthenticated, hydrated, fetchCurrentUser } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
-      // If not hydrated, wait for it
       if (!hydrated) {
         await fetchCurrentUser();
       }
 
-      // Check if user is admin
       if (!isAuthenticated || user?.role !== "admin") {
-        console.warn("[AdminGuard] Access Denied: Unauthorized role or not authenticated.");
         router.push("/");
       } else {
+        const unlocked = sessionStorage.getItem("admin_unlocked") === "true";
+        setIsUnlocked(unlocked);
         setIsChecking(false);
       }
     };
@@ -38,10 +39,14 @@ export default function AdminGuard({ children }: { children: ReactNode }) {
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
             className="h-12 w-12 mx-auto rounded-full border-2 border-indigo-500 border-t-transparent"
           />
-          <p className="mt-4 text-zinc-400 font-bold tracking-widest uppercase text-xs">Authenticating Nexus...</p>
+          <p className="mt-4 text-zinc-400 font-bold tracking-widest uppercase text-xs">Accessing Nexus...</p>
         </div>
       </div>
     );
+  }
+
+  if (!isUnlocked) {
+    return <AdminReAuth onVerified={() => setIsUnlocked(true)} />;
   }
 
   return <>{children}</>;
