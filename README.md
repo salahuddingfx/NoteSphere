@@ -1,76 +1,72 @@
-# 🌌 NoteSphere | The Universal Academic Vault
+<p align="center">
+  <img src="https://capsule-render.vercel.app/render?type=soft&color=auto&height=300&section=header&text=NoteSphere&fontSize=90&animation=fadeIn&fontAlignY=38&desc=The%20Universal%20Academic%20Vault&descAlignY=51&descSize=20" />
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-indigo.svg)](https://opensource.org/licenses/MIT)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![PWA](https://img.shields.io/badge/PWA-Ready-orange.svg)](https://web.dev/progressive-web-apps/)
-[![Aesthetics](https://img.shields.io/badge/Design-Premium-gold.svg)](#-key-features)
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Space+Grotesk&weight=700&size=28&pause=1000&color=6366F1&center=true&vCenter=true&width=600&lines=Share+Smarter;Rank+Faster;The+Future+of+Academic+Sharing;Initialize+the+Vault" alt="Typing SVG" />
+</p>
 
-> **NoteSphere** is a state-of-the-art academic ecosystem built to turn chaotic note-sharing into a high-end, gamified experience. Secure, fast, and visually stunning.
-
----
-
-## ✨ Key Features
-
-- **🛡️ Secure Vault**: JWT-protected environment for all academic resources.
-- **🎮 Gamification Engine**: Earn XP, unlock badges, and climb the global student leaderboard.
-- **💎 Premium UI/UX**: Immersive 3D hero sections (Three.js), GSAP animations, and custom interactive cursor.
-- **📱 PWA Ready**: Installable on mobile and desktop for a native application feel.
-- **👨‍💻 Developer Showcase**: Integrated professional portfolio system.
-
-## 🛠️ Technology Stack
-
-| Layer | Technology |
-| --- | --- |
-| **Frontend** | Next.js 14, Tailwind CSS, Framer Motion, GSAP |
-| **Graphics** | Three.js, React Three Fiber |
-| **Backend** | Node.js, Express.js |
-| **Database** | MongoDB Atlas, Mongoose |
-| **Auth** | JWT, BcryptJS, Cookie-based sessions |
-| **Storage** | Cloudinary (CDN) |
-
-## 🚀 Quick Start
-
-### 1. Clone the Vault
-```bash
-git clone https://github.com/salahuddingfx/NoteSphere.git
-cd NoteSphere
-```
-
-### 2. Backend Setup
-```bash
-cd backend
-npm install
-# Configure your .env (see .env.example)
-npm start
-```
-
-### 3. Frontend Setup
-```bash
-cd ../frontend
-npm install
-# Configure your .env.local
-npm run dev
-```
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-indigo.svg?style=for-the-badge" /></a>
+  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-14-black.svg?style=for-the-badge&logo=next.js" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-blue.svg?style=for-the-badge&logo=typescript" /></a>
+  <a href="https://web.dev/progressive-web-apps/"><img src="https://img.shields.io/badge/PWA-Ready-orange.svg?style=for-the-badge&logo=pwa" /></a>
+</p>
 
 ---
 
-## 👨‍💻 Visionary Behind the Project
-
-Built with passion by **Salah Uddin Kader**, focused on bridging the gap between complex academic resources and student accessibility.
+## 🌌 The Vision
+**NoteSphere** is not just a note-sharing site; it's a high-performance **Academic Intelligence Ecosystem**. Built with a focus on deep security, immersive aesthetics, and a competitive gamification core. 
 
 ---
 
-## 🤝 Contributing
+## 🚀 Technical Arsenal
 
-We welcome contributions! Please check our [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) and [SECURITY.md](./SECURITY.md) before submitting pull requests.
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend Core** | ![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![TypeScript](https://img.shields.io/badge/typescript-%23007acc.svg?style=for-the-badge&logo=typescript&logoColor=white) |
+| **Styling & Motion** | ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Framer](https://img.shields.io/badge/Framer-black?style=for-the-badge&logo=framer&logoColor=blue) ![GSAP](https://img.shields.io/badge/GSAP-green?style=for-the-badge&logo=greensock&logoColor=white) |
+| **Graphics Engine** | ![Threejs](https://img.shields.io/badge/threejs-black?style=for-the-badge&logo=three.js&logoColor=white) ![WebGL](https://img.shields.io/badge/WebGL-990000?style=for-the-badge&logo=webgl&logoColor=white) |
+| **Backend Matrix** | ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens) |
+| **Database Vault** | ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![Mongoose](https://img.shields.io/badge/Mongoose-red?style=for-the-badge&logo=mongoose&logoColor=white) |
 
-## 📄 License
+---
 
-This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE) file for details.
+## 👨‍💻 Visionary Architect
+
+<p align="center">
+  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Salahuddin" width="120" />
+  <br />
+  <b>Salah Uddin Kader</b>
+  <br />
+  <i>Lead Fullstack Engineer & Designer</i>
+</p>
+
+---
+
+## 📈 Vault Performance Metrics
+
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=salahuddingfx&show_icons=true&theme=tokyonight" height="150" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=salahuddingfx&layout=compact&theme=tokyonight" height="150" />
+</p>
+
+---
+
+## 🛡️ Security Architecture
+The NoteSphere vault utilizes industry-standard **AES encryption** logic for data handling and **JWT-based identity verification** to ensure your academic intellectual property remains yours.
+
+---
+
+## 🌍 Community & Support
+
+<p align="center">
+  <a href="https://github.com/salahuddingfx/NoteSphere"><img src="https://img.shields.io/badge/Join-Community-6366F1?style=for-the-badge&logo=discord&logoColor=white" /></a>
+  <a href="mailto:support@notesphere.app"><img src="https://img.shields.io/badge/Contact-Support-white?style=for-the-badge&logo=gmail&logoColor=red" /></a>
+</p>
 
 ---
 
 <p align="center">
-  Built for the future of education. 🌌
+  <img src="https://capsule-render.vercel.app/render?type=waving&color=auto&height=100&section=footer" />
 </p>
