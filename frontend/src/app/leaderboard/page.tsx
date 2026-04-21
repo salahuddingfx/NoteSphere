@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import MainNav from "@/components/ui/MainNav";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
-import Skeleton from "@/components/ui/Skeleton";
 
 interface Leader {
   name: string;
