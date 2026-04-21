@@ -87,6 +87,10 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    isProfileCompleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

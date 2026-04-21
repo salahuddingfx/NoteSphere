@@ -13,6 +13,7 @@ type AuthStore = {
   login: (payload: AuthPayload) => Promise<boolean>;
   logout: () => Promise<void>;
   fetchCurrentUser: () => Promise<void>;
+  setUser: (user: AuthUser) => void;
   clearError: () => void;
 };
 
@@ -79,6 +80,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ user: null, isAuthenticated: false, loading: false, hydrated: true });
     }
   },
+
+  setUser: (user: AuthUser) => set({ user }),
 
   clearError: () => set({ error: null }),
 }));

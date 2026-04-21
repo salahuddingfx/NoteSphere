@@ -20,7 +20,7 @@ interface ProfileFormData {
 export default function ProfileSettings() {
   const { user, setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState("");
   const [formData, setFormData] = useState<ProfileFormData>({
     bio: user?.bio || "",
     avatar: user?.avatar || "",
@@ -36,13 +36,13 @@ export default function ProfileSettings() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setSuccess(false);
+    setMessage("");
 
     try {
       const { data } = await api.patch("/users/profile", formData);
       setUser(data.user);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setMessage(data.message);
+      setTimeout(() => setMessage(""), 5000);
     } catch (err) {
       console.error("Failed to update profile", err);
     } finally {
@@ -114,7 +114,7 @@ export default function ProfileSettings() {
         </div>
 
         <div className="lg:col-span-2 flex items-center justify-between pt-6 border-t border-white/5">
-           {success && <p className="text-sm font-bold text-green-400">✅ Vault Identity Synchronized!</p>}
+           {message && <p className="text-sm font-bold text-green-400">✅ {message}</p>}
            <button 
              disabled={loading}
              className="ml-auto rounded-2xl bg-white px-10 py-4 text-sm font-black text-black hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
