@@ -7,6 +7,10 @@ const rateLimit = require("express-rate-limit");
 const env = require("./config/env");
 const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
+const connectDB = require("./config/db");
+
+// Connect to Database
+connectDB();
 
 const app = express();
 
