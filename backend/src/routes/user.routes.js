@@ -1,10 +1,12 @@
 const express = require("express");
-const { getLeaderboard, updateProfile } = require("../controllers/user.controller");
+const { getLeaderboard, updateProfile, uploadAvatarPhoto } = require("../controllers/user.controller");
 const { protect } = require("../middlewares/auth.middleware");
+const uploadAvatar = require("../middlewares/uploadAvatar");
 
 const router = express.Router();
 
 router.get("/leaderboard", getLeaderboard);
 router.patch("/profile", protect, updateProfile);
+router.post("/avatar", protect, uploadAvatar.single("avatar"), uploadAvatarPhoto);
 
 module.exports = router;

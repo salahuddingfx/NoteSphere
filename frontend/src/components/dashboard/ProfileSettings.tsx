@@ -64,6 +64,45 @@ export default function ProfileSettings() {
       <form onSubmit={handleSubmit} className="grid gap-10 lg:grid-cols-2">
         {/* Left: Bio & Avatar */}
         <div className="space-y-8">
+          <div className="flex flex-col items-center gap-6 p-6 rounded-3xl bg-black/40 border border-white/5">
+             <div className="relative group">
+                <img 
+                  src={formData.avatar} 
+                  className="h-32 w-32 rounded-3xl border-2 border-indigo-500/30 object-cover" 
+                  alt="Preview" 
+                />
+                <label className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl cursor-pointer text-xs font-black uppercase tracking-widest text-white">
+                   Upload
+                   <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={async (e) => {
+                      if (e.target.files?.[0]) {
+                        const file = e.target.files[0];
+                        const fd = new FormData();
+                        fd.append("avatar", file);
+                        setLoading(true);
+                        try {
+                          const { data } = await api.post("/users/avatar", fd, {
+                            headers: { "Content-Type": "multipart/form-data" }
+                          });
+                          setFormData({ ...formData, avatar: data.user.avatar });
+                          setUser(data.user);
+                          setMessage(data.message);
+                        } catch (err) {
+                          console.error("Avatar sync failed", err);
+                        } finally {
+                          setLoading(false);
+                        }
+                      }
+                    }}
+                   />
+                </label>
+             </div>
+             <p className="text-[10px] uppercase tracking-widest text-zinc-600 font-bold">Cloudinary Integrated Storage</p>
+          </div>
+
           <div className="space-y-3">
              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Profile Bio</label>
              <textarea 
@@ -71,16 +110,6 @@ export default function ProfileSettings() {
                onChange={(e) => setFormData({...formData, bio: e.target.value})}
                placeholder="Tell the world who you are..."
                className="w-full rounded-2xl border border-white/5 bg-black/40 p-5 text-white focus:border-indigo-500 outline-none transition-all min-h-[120px]"
-             />
-          </div>
-          <div className="space-y-3">
-             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Avatar URL</label>
-             <input 
-               type="text"
-               value={formData.avatar}
-               onChange={(e) => setFormData({...formData, avatar: e.target.value})}
-               placeholder="https://..."
-               className="w-full rounded-2xl border border-white/5 bg-black/40 p-5 text-white focus:border-indigo-500 outline-none transition-all"
              />
           </div>
         </div>

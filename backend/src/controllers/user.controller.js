@@ -48,7 +48,26 @@ const updateProfile = asyncHandler(async (req, res) => {
   });
 });
 
+const uploadAvatarPhoto = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    throw new ApiError(400, "Please upload an image file");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { avatar: req.file.path },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Avatar synchronized with Nexus Vault",
+    user,
+  });
+});
+
 module.exports = {
   getLeaderboard,
   updateProfile,
+  uploadAvatarPhoto,
 };
