@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const mongoose = require("mongoose");
 const asyncHandler = require("../utils/asyncHandler");
 
 const getLeaderboard = asyncHandler(async (req, res) => {
@@ -66,8 +67,59 @@ const uploadAvatarPhoto = asyncHandler(async (req, res) => {
   });
 });
 
+const Note = require("../models/Note");
+
+const getContributionStats = asyncHandler(async (req, res) => {
+  const { view = "daily" } = req.query;
+  const userId = req.user.id;
+
+  let groupBy;
+  let dateRange = new Date();
+
+  if (view === "daily") {
+    groupBy = { $dateToString: { format: "%a", date: "$createdAt" } }; // Mon, Tue...
+    dateRange.setDate(dateRange.getDate() - 7);
+  } else if (view === "weekly") {
+    groupBy = { $week: "$createdAt" };
+    dateRange.setDate(dateRange.getDate() - 28);
+  } else if (view === "monthly") {
+    groupBy = { $dateToString: { format: "%b", date: "$createdAt" } }; // Jan, Feb...
+    dateRange.setMonth(dateRange.getMonth() - 6);
+  } else {
+    groupBy = { $dateToString: { format: "%Y", date: "$createdAt" } };
+    dateRange.setFullYear(dateRange.getFullYear() - 1);
+  }
+
+  const stats = await Note.aggregate([
+    {
+      $match: {
+        author: new mongoose.Types.ObjectId(userId),
+        createdAt: { $gte: dateRange },
+      },
+    },
+    {
+      $group: {
+        _id: groupBy,
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { "_id": 1 } },
+  ]);
+
+  const formattedStats = stats.map(s => ({
+    name: s._id.toString(),
+    notes: s.count
+  }));
+
+  res.status(200).json({
+    success: true,
+    stats: formattedStats.length > 0 ? formattedStats : [{ name: "No Data", notes: 0 }],
+  });
+});
+
 module.exports = {
   getLeaderboard,
   updateProfile,
   uploadAvatarPhoto,
+  getContributionStats,
 };
