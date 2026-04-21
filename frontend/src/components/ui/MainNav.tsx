@@ -5,20 +5,19 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useAuthStore } from "@/store/auth.store";
+
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/notes", label: "All Notes" },
+  { href: "/notes", label: "Notes" },
   { href: "/upload", label: "Upload" },
-  { href: "/requests", label: "Requests" },
-  { href: "/saved", label: "Saved" },
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/developer", label: "Developer" },
+  { href: "/leaderboard", label: "Ranks" },
 ];
 
 export default function MainNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { user, isAuthenticated } = useAuthStore();
 
   return (
     <header className="sticky top-4 z-50 mx-auto mb-12 w-full max-w-6xl px-4">
@@ -35,10 +34,10 @@ export default function MainNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
+                className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
                   active
-                    ? "bg-white text-black shadow-lg"
-                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    ? "bg-white text-black"
+                    : "text-zinc-500 hover:text-white hover:bg-white/5"
                 }`}
               >
                 {item.label}
@@ -47,15 +46,40 @@ export default function MainNav() {
           })}
         </div>
 
+        {/* User Profile / Auth */}
+        <div className="hidden xl:flex items-center gap-4">
+          {isAuthenticated ? (
+            <Link href="/dashboard" className="flex items-center gap-3 rounded-2xl bg-white/5 p-1 pr-4 border border-white/5 hover:border-white/10 transition-all">
+              <img 
+                src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`} 
+                className="h-9 w-9 rounded-xl border border-white/10 object-cover" 
+                alt="Profile" 
+              />
+              <div className="text-left">
+                 <p className="text-[10px] font-black text-white uppercase tracking-wider">{user?.name?.split(' ')[0]}</p>
+                 <div className="flex items-center gap-1">
+                    <span className="text-[8px] font-bold text-indigo-400">LVL {user?.level}</span>
+                    <span className="h-1 w-1 rounded-full bg-zinc-600" />
+                    <span className="text-[8px] font-bold text-zinc-400">{user?.xp} XP</span>
+                 </div>
+              </div>
+            </Link>
+          ) : (
+            <Link href="/login" className="rounded-xl bg-white px-5 py-2 text-[10px] font-black uppercase tracking-widest text-black hover:bg-zinc-200 transition-all">
+              Sign In
+            </Link>
+          )}
+        </div>
+
         {/* Mobile Toggle */}
         <button 
           onClick={() => setIsOpen(!isOpen)}
           className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white xl:hidden"
         >
           {isOpen ? (
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
           ) : (
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
           )}
         </button>
       </nav>

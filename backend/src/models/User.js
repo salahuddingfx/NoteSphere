@@ -63,7 +63,21 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+      default: function() {
+        return `https://api.dicebear.com/7.x/avataaars/svg?seed=${this.username || 'Felix'}`;
+      },
+    },
+    bio: {
+      type: String,
+      default: "",
+      maxlength: 250,
+    },
+    socials: {
+      instagram: { type: String, default: "" },
+      facebook: { type: String, default: "" },
+      linkedin: { type: String, default: "" },
+      whatsapp: { type: String, default: "" },
+      contact: { type: String, default: "" },
     },
     savedNotes: [{
       type: mongoose.Schema.Types.ObjectId,

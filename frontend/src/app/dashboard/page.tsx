@@ -6,6 +6,7 @@ import AuthGate from "@/components/auth/AuthGate";
 import { useAuthStore } from "@/store/auth.store";
 
 import ContributionChart from "@/components/dashboard/ContributionChart";
+import ProfileSettings from "@/components/dashboard/ProfileSettings";
 
 export default function DashboardPage() {
   const { user, logout } = useAuthStore();
@@ -104,6 +105,8 @@ export default function DashboardPage() {
                 ))}
              </div>
           </div>
+
+          <ProfileSettings />
 
           <ContributionChart />
         </motion.section>

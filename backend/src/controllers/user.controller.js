@@ -13,6 +13,22 @@ const getLeaderboard = asyncHandler(async (req, res) => {
   });
 });
 
+const updateProfile = asyncHandler(async (req, res) => {
+  const { bio, socials, avatar } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { bio, socials, avatar },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
 module.exports = {
   getLeaderboard,
+  updateProfile,
 };
