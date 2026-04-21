@@ -21,7 +21,7 @@ const updateProfile = asyncHandler(async (req, res) => {
   let user = await User.findByIdAndUpdate(
     req.user.id,
     { bio, socials, avatar },
-    { new: true, runValidators: true }
+    { returnDocument: "after", runValidators: true }
   );
 
   let bonusMessage = "";
@@ -58,7 +58,7 @@ const uploadAvatarPhoto = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user.id,
     { avatar: req.file.path },
-    { new: true }
+    { returnDocument: "after" }
   );
 
   res.status(200).json({
@@ -78,13 +78,13 @@ const getContributionStats = asyncHandler(async (req, res) => {
   let dateRange = new Date();
 
   if (view === "daily") {
-    groupBy = { $dateToString: { format: "%a", date: "$createdAt" } }; // Mon, Tue...
+    groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
     dateRange.setDate(dateRange.getDate() - 7);
   } else if (view === "weekly") {
     groupBy = { $week: "$createdAt" };
     dateRange.setDate(dateRange.getDate() - 28);
   } else if (view === "monthly") {
-    groupBy = { $dateToString: { format: "%b", date: "$createdAt" } }; // Jan, Feb...
+    groupBy = { $dateToString: { format: "%Y-%m", date: "$createdAt" } };
     dateRange.setMonth(dateRange.getMonth() - 6);
   } else {
     groupBy = { $dateToString: { format: "%Y", date: "$createdAt" } };
@@ -94,7 +94,7 @@ const getContributionStats = asyncHandler(async (req, res) => {
   const stats = await Note.aggregate([
     {
       $match: {
-        author: req.user._id,
+        author: new mongoose.Types.ObjectId(userId),
         createdAt: { $gte: dateRange },
       },
     },
@@ -107,10 +107,23 @@ const getContributionStats = asyncHandler(async (req, res) => {
     { $sort: { "_id": 1 } },
   ]);
 
-  const formattedStats = stats.map(s => ({
-    name: String(s._id || "N/A"),
-    notes: s.count || 0
-  }));
+  const formattedStats = stats.map(s => {
+    let name = String(s._id || "N/A");
+    
+    if (view === "daily") {
+      const date = new Date(s._id);
+      name = date.toLocaleDateString("en-US", { weekday: "short" });
+    } else if (view === "monthly") {
+      const [year, month] = s._id.split("-");
+      const date = new Date(year, month - 1);
+      name = date.toLocaleDateString("en-US", { month: "short" });
+    }
+    
+    return {
+      name,
+      notes: s.count || 0
+    };
+  });
 
   res.status(200).json({
     success: true,

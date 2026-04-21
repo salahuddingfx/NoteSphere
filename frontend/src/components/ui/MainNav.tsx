@@ -6,6 +6,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuthStore } from "@/store/auth.store";
+import { getUserRank } from "@/lib/ranks";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -58,9 +59,7 @@ export default function MainNav() {
               <div className="text-left">
                  <p className="text-[10px] font-black text-white uppercase tracking-wider">{user?.name?.split(' ')[0]}</p>
                  <div className="flex items-center gap-1">
-                    <span className="text-[8px] font-bold text-indigo-400">LVL {user?.level}</span>
-                    <span className="h-1 w-1 rounded-full bg-zinc-600" />
-                    <span className="text-[8px] font-bold text-zinc-400">{user?.xp} XP</span>
+                    <span className="text-[8px] font-bold text-indigo-400 uppercase tracking-tighter">{getUserRank(user?.level || 1).name}</span>
                  </div>
               </div>
             </Link>
@@ -108,9 +107,9 @@ export default function MainNav() {
                   <div>
                     <p className="text-sm font-black text-white uppercase tracking-widest">{user?.name}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] font-black text-indigo-400 uppercase">LVL {user?.level}</span>
-                      <span className="h-1 w-1 rounded-full bg-zinc-700" />
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase">{user?.xp} XP</span>
+                      <span className={`text-[10px] font-black uppercase tracking-wider ${getUserRank(user?.level || 1).color}`}>
+                        {getUserRank(user?.level || 1).name}
+                      </span>
                     </div>
                   </div>
                 </Link>

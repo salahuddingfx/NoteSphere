@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import MainNav from "@/components/ui/MainNav";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
+import { getUserRank } from "@/lib/ranks";
 
 interface Leader {
   name: string;
@@ -77,7 +78,9 @@ export default function LeaderboardPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">{user.name || user.username}</h3>
-                      <p className="text-sm text-zinc-500 uppercase tracking-widest font-bold mt-1">Level {user.level} {user.badges[0] || "Scholar"}</p>
+                      <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${getUserRank(user.level).color}`}>
+                        {getUserRank(user.level).name}
+                      </p>
                     </div>
                   </div>
                   

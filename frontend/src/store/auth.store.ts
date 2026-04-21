@@ -71,6 +71,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   fetchCurrentUser: async () => {
+    const state = useAuthStore.getState();
+    if (state.loading || state.hydrated) return;
+    
     set({ loading: true, error: null });
 
     try {

@@ -12,6 +12,9 @@ export default function UploadPage() {
   const [isCropping, setIsCropping] = useState(false);
   const [department, setDepartment] = useState("CSE");
   const [semester, setSemester] = useState("Semester 1");
+  const [subject, setSubject] = useState("");
+  const [subjectCode, setSubjectCode] = useState("");
+  const [teacher, setTeacher] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -42,6 +45,40 @@ export default function UploadPage() {
               <input 
                 type="text" 
                 placeholder="e.g. Organic Chemistry - Semester 3" 
+                className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Subject Name</label>
+                <input 
+                  type="text" 
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="e.g. Data Structures" 
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Subject Code</label>
+                <input 
+                  type="text" 
+                  value={subjectCode}
+                  onChange={(e) => setSubjectCode(e.target.value)}
+                  placeholder="e.g. CSE-2101" 
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Course Instructor (Optional)</label>
+              <input 
+                type="text" 
+                value={teacher}
+                onChange={(e) => setTeacher(e.target.value)}
+                placeholder="e.g. Dr. Jane Smith" 
                 className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
               />
             </div>

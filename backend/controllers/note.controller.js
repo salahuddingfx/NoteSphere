@@ -49,7 +49,7 @@ const inferNoteFileType = (mimetype) => {
 };
 
 const createNote = asyncHandler(async (req, res) => {
-  const { title, description, department, semester, subject, tags } = req.body;
+  const { title, description, department, semester, subject, subjectCode, teacher, tags } = req.body;
 
   if (!req.file) {
     throw new ApiError(400, "File is required");
@@ -77,6 +77,8 @@ const createNote = asyncHandler(async (req, res) => {
     department,
     semester,
     subject,
+    subjectCode,
+    teacher,
     tags: normalizedTags,
     author: req.user._id,
   });
@@ -89,7 +91,7 @@ const createNote = asyncHandler(async (req, res) => {
 });
 
 const getNotes = asyncHandler(async (req, res) => {
-  const { search, department, semester, subject, fileType, tag, verified, sort = "latest" } = req.query;
+  const { search, department, semester, subject, subjectCode, teacher, fileType, tag, verified, sort = "latest" } = req.query;
 
   const query = {};
 
@@ -100,6 +102,8 @@ const getNotes = asyncHandler(async (req, res) => {
   if (department) query.department = department;
   if (semester) query.semester = semester;
   if (subject) query.subject = subject;
+  if (subjectCode) query.subjectCode = subjectCode;
+  if (teacher) query.teacher = teacher;
   if (fileType) query.fileType = fileType;
   if (tag) query.tags = tag;
   if (typeof verified !== "undefined") query.isVerified = verified === "true";
@@ -147,7 +151,7 @@ const updateNote = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You can only edit your own notes");
   }
 
-  const { title, description, department, semester, subject, tags, isVerified } = req.body;
+  const { title, description, department, semester, subject, subjectCode, teacher, tags, isVerified } = req.body;
 
   if (title && title !== note.title) {
     note.title = title;
@@ -158,6 +162,8 @@ const updateNote = asyncHandler(async (req, res) => {
   if (department) note.department = department;
   if (semester) note.semester = semester;
   if (subject) note.subject = subject;
+  if (subjectCode) note.subjectCode = subjectCode;
+  if (teacher) note.teacher = teacher;
   if (typeof tags !== "undefined") {
     note.tags = Array.isArray(tags)
       ? tags

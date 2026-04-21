@@ -64,6 +64,7 @@ import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import IntroLoader from "@/components/IntroLoader";
 import CustomCursor from "@/components/ui/CustomCursor";
 import Footer from "@/components/ui/Footer";
+import AuthInitializer from "@/components/auth/AuthInitializer";
 
 export default function RootLayout({
   children,
@@ -73,6 +74,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={spaceGrotesk.className} suppressHydrationWarning>
+        <AuthInitializer />
         <IntroLoader />
         <CustomCursor />
         {children}

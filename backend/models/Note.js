@@ -48,6 +48,16 @@ const noteSchema = new mongoose.Schema(
       required: [true, "Subject is required"],
       trim: true,
     },
+    subjectCode: {
+      type: String,
+      trim: true,
+      maxlength: 20,
+    },
+    teacher: {
+      type: String,
+      trim: true,
+      maxlength: 100,
+    },
     tags: {
       type: [String],
       default: [],
@@ -74,8 +84,8 @@ const noteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-noteSchema.index({ title: "text", description: "text", subject: "text", tags: "text" });
-noteSchema.index({ department: 1, semester: 1, subject: 1, fileType: 1, isVerified: 1 });
+noteSchema.index({ title: "text", description: "text", subject: "text", subjectCode: "text", teacher: "text", tags: "text" });
+noteSchema.index({ department: 1, semester: 1, subject: 1, subjectCode: 1, teacher: 1, fileType: 1, isVerified: 1 });
 noteSchema.index({ downloads: -1, createdAt: -1 });
 
 module.exports = mongoose.model("Note", noteSchema);

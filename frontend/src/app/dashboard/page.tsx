@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import AuthGate from "@/components/auth/AuthGate";
 import { useAuthStore } from "@/store/auth.store";
+import { getUserRank } from "@/lib/ranks";
 
 import ContributionChart from "@/components/dashboard/ContributionChart";
 import ProfileSettings from "@/components/dashboard/ProfileSettings";
@@ -26,8 +27,13 @@ export default function DashboardPage() {
                  <img src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"} alt={user?.name} className="h-full w-full rounded-xl object-cover" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-indigo-400 font-bold">NoteSphere Nexus</p>
-                <h1 className="mt-2 text-4xl font-bold text-white tracking-tight">Welcome, {user?.name}</h1>
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="text-xs uppercase tracking-[0.3em] text-indigo-400 font-bold">NoteSphere Nexus</p>
+                  <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${getUserRank(user?.level || 1).bg} ${getUserRank(user?.level || 1).color} border ${getUserRank(user?.level || 1).border}`}>
+                    {getUserRank(user?.level || 1).name}
+                  </span>
+                </div>
+                <h1 className="text-4xl font-bold text-white tracking-tight">Welcome, {user?.name}</h1>
                 <p className="text-zinc-500 mt-1">Manage your academic profile and contributions.</p>
               </div>
             </div>
@@ -43,7 +49,7 @@ export default function DashboardPage() {
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {[
               { label: "Department", val: user?.department || "General" },
-              { label: "Academic Semester", val: user?.semester || "N/A" },
+              { label: "Current Level", val: `Level ${user?.level || 1}` },
               { label: "Total Rank XP", val: `${user?.xp || 0} XP` },
             ].map((stat) => (
               <article key={stat.label} className="rounded-2xl border border-white/5 bg-white/5 p-6 hover:border-white/10 transition-colors">
