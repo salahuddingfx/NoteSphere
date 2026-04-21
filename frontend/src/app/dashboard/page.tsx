@@ -82,6 +82,29 @@ export default function DashboardPage() {
              </div>
           </div>
 
+          {/* XP Rewards Roadmap */}
+          <div className="mt-12 rounded-[2rem] border border-white/5 bg-gradient-to-br from-indigo-500/5 to-transparent p-8">
+             <div className="flex items-center gap-3 mb-6">
+                <span className="text-xl">📊</span>
+                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-white">XP Rewards Roadmap</h3>
+             </div>
+             <div className="grid gap-6 sm:grid-cols-3">
+                {[
+                  { action: "Upload Notes", xp: "+50 XP", desc: "Share verified materials" },
+                  { action: "Daily Login", xp: "+10 XP", desc: "Maintain your streak" },
+                  { action: "Get Verified", xp: "+200 XP", desc: "Unlock elite status" },
+                ].map((item) => (
+                  <div key={item.action} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                       <p className="text-xs font-bold text-zinc-500">{item.action}</p>
+                       <p className="text-xs font-black text-indigo-400">{item.xp}</p>
+                    </div>
+                    <p className="text-sm text-white font-medium">{item.desc}</p>
+                  </div>
+                ))}
+             </div>
+          </div>
+
           <ContributionChart />
         </motion.section>
       </main>
