@@ -22,6 +22,15 @@ export type AuthUser = {
   level: number;
   badges: string[];
   avatar: string;
+  bio?: string;
+  socials?: {
+    instagram: string;
+    facebook: string;
+    linkedin: string;
+    whatsapp: string;
+    contact: string;
+  };
+  lastLogin?: string | null;
 };
 
 export type AuthPayload = {

@@ -1,15 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useAuthStore } from "@/store/auth.store";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
+
+interface ProfileFormData {
+  bio: string;
+  avatar: string;
+  socials: {
+    instagram: string;
+    facebook: string;
+    linkedin: string;
+    whatsapp: string;
+    contact: string;
+  };
+}
 
 export default function ProfileSettings() {
   const { user, setUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProfileFormData>({
     bio: user?.bio || "",
     avatar: user?.avatar || "",
     socials: {
@@ -21,7 +33,7 @@ export default function ProfileSettings() {
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
@@ -86,10 +98,13 @@ export default function ProfileSettings() {
                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">{social.icon} {social.label}</label>
                <input 
                 type="text" 
-                value={(formData.socials as any)[social.key]}
+                value={formData.socials[social.key as keyof typeof formData.socials]}
                 onChange={(e) => setFormData({
                   ...formData, 
-                  socials: { ...formData.socials, [social.key]: e.target.value }
+                  socials: { 
+                    ...formData.socials, 
+                    [social.key]: e.target.value 
+                  }
                 })}
                 placeholder={social.label}
                 className="w-full rounded-xl border border-white/5 bg-black/40 p-3 text-xs text-white focus:border-indigo-500 outline-none transition-all"
