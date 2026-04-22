@@ -33,10 +33,12 @@ interface Note {
   aiSummary?: string;
   author: {
     name: string;
+    username: string;
     avatar: string;
     department: string;
     semester: string;
   };
+
   createdAt: string;
 }
 

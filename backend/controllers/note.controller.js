@@ -121,7 +121,7 @@ const getNotes = asyncHandler(async (req, res) => {
   if (sort === "verified") query.isVerified = true;
 
   const notes = await Note.find(query)
-    .populate("author", "name department semester role")
+    .populate("author", "name username department semester role")
     .sort(sortBy)
     .limit(40);
 
