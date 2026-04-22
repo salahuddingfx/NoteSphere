@@ -97,24 +97,21 @@ export default function RootLayout({
         />
         <ToastProvider>
           <AuthInitializer />
-          <IntroLoader />
-
-          <CustomCursor />
-          <MainNav />
-          <div className="pt-32">
-            {children}
-          </div>
-
-
-
-          <NexusAI />
-          <ScrollToTop />
-          <Footer />
-
-
+          <CommandPalette>
+            <IntroLoader />
+            <CustomCursor />
+            <MainNav />
+            <div className="pt-32">
+              {children}
+            </div>
+            <NexusAI />
+            <ScrollToTop />
+            <Footer />
+          </CommandPalette>
           <PWAInstallPrompt />
         </ToastProvider>
       </body>
+
     </html>
   );
 }
