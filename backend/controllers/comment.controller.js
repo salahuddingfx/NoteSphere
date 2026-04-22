@@ -1,5 +1,4 @@
-const Comment = require("../models/Comment");
-const Note = require("../models/Note");
+const Notification = require("../models/Notification");
 
 exports.addComment = async (req, res) => {
   try {
@@ -15,6 +14,33 @@ exports.addComment = async (req, res) => {
       parentComment: parentCommentId || null,
     });
 
+    // Create Notification
+    if (note.author.toString() !== req.user.id) {
+      await Notification.create({
+        recipient: note.author,
+        sender: req.user.id,
+        type: "comment",
+        note: noteId,
+        comment: comment._id,
+        message: `${req.user.name} commented on your asset: ${note.title}`
+      });
+    }
+
+    // If it's a reply, notify the parent comment author too
+    if (parentCommentId) {
+      const parentComment = await Comment.findById(parentCommentId);
+      if (parentComment && parentComment.author.toString() !== req.user.id && parentComment.author.toString() !== note.author.toString()) {
+        await Notification.create({
+          recipient: parentComment.author,
+          sender: req.user.id,
+          type: "comment",
+          note: noteId,
+          comment: comment._id,
+          message: `${req.user.name} replied to your thought in: ${note.title}`
+        });
+      }
+    }
+
     const populatedComment = await comment.populate("author", "name username avatar");
 
     res.status(201).json({ success: true, comment: populatedComment });
@@ -22,6 +48,7 @@ exports.addComment = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 exports.getNoteComments = async (req, res) => {
   try {
