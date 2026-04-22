@@ -177,7 +177,8 @@ const getNoteBySlug = asyncHandler(async (req, res) => {
     { slug: req.params.slug },
     { $inc: { views: 1 } },
     { returnDocument: "after" }
-  ).populate("author", "name department semester role");
+  ).populate("author", "name username avatar department semester role");
+
 
   if (!note) {
     throw new ApiError(404, "Note not found");

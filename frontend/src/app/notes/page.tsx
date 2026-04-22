@@ -190,8 +190,13 @@ export default function NotesPage() {
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <img src={note.author.avatar} alt={note.author.name} className="h-8 w-8 rounded-full border border-white/10 object-cover" />
+                      <img 
+                        src={note.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${note.author.username}`} 
+                        alt={note.author.name} 
+                        className="h-8 w-8 rounded-full border border-white/10 object-cover" 
+                      />
                       <div className="space-y-1">
+
                         <p className="text-white text-xs font-bold">{note.author.name}</p>
                         <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest">{note.department} • {note.semester} Sem</p>
                       </div>
