@@ -288,8 +288,13 @@ export default function NoteDetailPage() {
             <div className="rounded-[2rem] border border-white/5 bg-white/5 p-8 backdrop-blur-xl sticky top-32">
                <div className="flex items-center gap-4 mb-8">
                  <Link href={`/profile/${note.author.username}`}>
-                   <img src={note.author.avatar} alt={note.author.name} className="h-14 w-14 rounded-2xl border border-white/10 object-cover hover:scale-105 transition-transform" />
+                   <img 
+                     src={note.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${note.author.username}`} 
+                     alt={note.author.name} 
+                     className="h-14 w-14 rounded-2xl border border-white/10 object-cover hover:scale-105 transition-transform" 
+                   />
                  </Link>
+
                  <div>
                     <Link href={`/profile/${note.author.username}`} className="text-white font-bold hover:text-indigo-400 transition-colors">
                       {note.author.name}
