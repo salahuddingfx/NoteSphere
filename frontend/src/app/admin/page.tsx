@@ -134,8 +134,13 @@ export default function AdminPage() {
                   className="flex items-center justify-between p-3 rounded-2xl border border-white/5 bg-white/5 hover:border-white/10 transition-all cursor-default"
                 >
                    <div className="flex items-center gap-3">
-                      <img src={user.avatar} alt={user.username} className="h-10 w-10 rounded-xl border border-white/10" />
+                      <img 
+                        src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
+                        alt={user.username} 
+                        className="h-10 w-10 rounded-xl border border-white/10 object-cover" 
+                      />
                       <div>
+
                          <p className="text-sm font-bold text-white">{user.name}</p>
                          <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Level {user.level}</p>
                       </div>
