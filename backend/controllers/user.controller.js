@@ -180,6 +180,25 @@ const getSavedNotes = asyncHandler(async (req, res) => {
   });
 });
 
+const getUserProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+
+  const user = await User.findOne({ username })
+    .select("name username avatar bio department semester level xp badges socials createdAt");
+  
+  if (!user) throw new ApiError(404, "Nexus identity not found");
+
+  const notes = await Note.find({ author: user._id })
+    .select("title slug subject department semester fileType views downloads isVerified createdAt")
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    user,
+    notes,
+  });
+});
+
 module.exports = {
   getLeaderboard,
   updateProfile,
@@ -187,6 +206,8 @@ module.exports = {
   getContributionStats,
   getMyNotes,
   toggleSaveNote,
-  getSavedNotes
+  getSavedNotes,
+  getUserProfile
 };
+
 
