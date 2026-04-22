@@ -80,11 +80,47 @@ const chatWithAI = asyncHandler(async (req, res) => {
   });
 });
 
+const tryRequestWithFallback = async (prompt, systemPrompt = "You are a helpful academic assistant.") => {
+  const settings = await Setting.findOne();
+  const primaryModel = settings?.activeModel || DEFAULT_MODEL;
+
+  const modelsToTry = [
+    primaryModel, 
+    DEFAULT_MODEL, 
+    "openrouter/free",
+    "google/gemma-3-27b-it:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "qwen/qwen3-coder:free",
+    "meta-llama/llama-3.2-3b-instruct:free"
+  ];
+
+  const uniqueModels = [...new Set(modelsToTry)];
+  let lastError;
+
+  for (const model of uniqueModels) {
+    try {
+      console.log(`[Nexus AI] Attempting model for generation: ${model}`);
+      const response = await openai.chat.completions.create({
+        model: model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: prompt }
+        ],
+        response_format: { type: "json_object" }
+      });
+      console.log(`[Nexus AI] Success with model: ${model}`);
+      return response;
+    } catch (err) {
+      console.warn(`[Nexus AI] Model ${model} failed: ${err.message}`);
+      lastError = err;
+      continue;
+    }
+  }
+  throw lastError || new Error("All AI models failed to respond.");
+};
+
 const generateLearningPath = asyncHandler(async (req, res) => {
   const { title, subject, description } = req.body;
-
-  const settings = await Setting.findOne();
-  const model = settings?.activeModel || DEFAULT_MODEL;
 
   const prompt = `Act as an expert academic advisor. Create a step-by-step learning path (roadmap) for a student interested in: "${title}" (Subject: ${subject}).
   
@@ -100,24 +136,16 @@ const generateLearningPath = asyncHandler(async (req, res) => {
   Ensure the steps go from fundamentals to advanced mastery related to this topic. Respond ONLY with the JSON.`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: model,
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" }
-    });
-
+    const response = await tryRequestWithFallback(prompt, "You are an expert academic advisor who responds in JSON.");
     const path = JSON.parse(response.choices[0].message.content);
     res.status(200).json({ success: true, path });
   } catch (err) {
-    throw new ApiError(500, "Failed to manifest learning path from the Nexus.");
+    throw new ApiError(500, "Failed to manifest learning path from the Nexus: " + err.message);
   }
 });
 
 const generateQuiz = asyncHandler(async (req, res) => {
   const { title, subject, description } = req.body;
-
-  const settings = await Setting.findOne();
-  const model = settings?.activeModel || DEFAULT_MODEL;
 
   const prompt = `Create an interactive quiz based on the academic note: "${title}" (Subject: ${subject}).
   
@@ -138,18 +166,14 @@ const generateQuiz = asyncHandler(async (req, res) => {
   Respond ONLY with the JSON.`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: model,
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" }
-    });
-
+    const response = await tryRequestWithFallback(prompt, "You are an expert quiz generator who responds in JSON.");
     const quiz = JSON.parse(response.choices[0].message.content);
     res.status(200).json({ success: true, quiz });
   } catch (err) {
-    throw new ApiError(500, "Failed to materialize quiz from the Nexus.");
+    throw new ApiError(500, "Failed to materialize quiz from the Nexus: " + err.message);
   }
 });
+
 
 module.exports = {
   chatWithAI,
