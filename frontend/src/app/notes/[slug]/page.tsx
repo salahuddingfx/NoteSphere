@@ -12,6 +12,8 @@ import NotePreview from "@/components/notes/NotePreview";
 import { useToast } from "@/components/ui/Toast";
 import CommentSection from "@/components/notes/CommentSection";
 import LearningPath from "@/components/notes/LearningPath";
+import QuizGenerator from "@/components/notes/QuizGenerator";
+
 
 
 
