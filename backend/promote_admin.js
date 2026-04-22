@@ -11,7 +11,7 @@ async function promoteToAdmin() {
     const result = await User.findOneAndUpdate(
       { username: "salahuddin" },
       { role: "admin" },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     if (result) {

@@ -133,7 +133,11 @@ const getNotes = asyncHandler(async (req, res) => {
 });
 
 const getNoteBySlug = asyncHandler(async (req, res) => {
-  const note = await Note.findOne({ slug: req.params.slug }).populate("author", "name department semester role");
+  const note = await Note.findOneAndUpdate(
+    { slug: req.params.slug },
+    { $inc: { views: 1 } },
+    { returnDocument: "after" }
+  ).populate("author", "name department semester role");
 
   if (!note) {
     throw new ApiError(404, "Note not found");

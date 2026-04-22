@@ -6,9 +6,10 @@ import MainNav from "@/components/ui/MainNav";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
-import { FileText, Download, User, Calendar, Tag, ShieldCheck, ArrowLeft, Eye } from "lucide-react";
+import { FileText, Download, User, Calendar, Tag, ShieldCheck, ArrowLeft, Eye, Bookmark, BookmarkCheck, Loader2, Heart, Share2 } from "lucide-react";
 import NoteSummary from "@/components/notes/NoteSummary";
 import NotePreview from "@/components/notes/NotePreview";
+import { useToast } from "@/components/ui/Toast";
 
 interface Note {
   _id: string;
@@ -24,6 +25,8 @@ interface Note {
   teacher?: string;
   tags: string[];
   downloads: number;
+  views: number;
+  likes: string[];
   isVerified: boolean;
   aiSummary?: string;
   author: {
@@ -40,13 +43,21 @@ export default function NoteDetailPage() {
   const router = useRouter();
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated } = useAuthStore();
+  const [downloading, setDownloading] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const { isAuthenticated, user } = useAuthStore();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchNote = async () => {
       try {
         const { data } = await api.get(`/notes/${slug}`);
         setNote(data.note);
+        if (user && data.note) {
+          setIsSaved(user.savedNotes?.includes(data.note._id));
+          setIsLiked(data.note.likes?.includes(user._id));
+        }
       } catch (err) {
         console.error("Failed to fetch note", err);
       } finally {
@@ -54,19 +65,68 @@ export default function NoteDetailPage() {
       }
     };
     if (slug) fetchNote();
-  }, [slug]);
+  }, [slug, user]);
 
   const handleDownload = async () => {
     if (!isAuthenticated) {
       router.push("/login");
       return;
     }
+    setDownloading(true);
     try {
       const { data } = await api.post(`/notes/${note?._id}/download`);
-      window.open(data.fileUrl, "_blank");
+      
+      // Trigger download via hidden link
+      const link = document.createElement("a");
+      link.href = data.fileUrl;
+      link.setAttribute("download", `${note?.title || 'note'}.${note?.fileType}`);
+      link.setAttribute("target", "_blank");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setNote(prev => prev ? { ...prev, downloads: data.downloads } : null);
+      showToast("Syncing from Nexus Vault... Download started.", "success");
     } catch (err) {
       console.error("Download failed", err);
+      showToast("Failed to retrieve file from vault.", "error");
+    } finally {
+      setDownloading(false);
     }
+  };
+
+  const handleToggleSave = async () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    try {
+      const { data } = await api.post("/users/save-note", { noteId: note?._id });
+      setIsSaved(data.saved);
+      showToast(data.saved ? "Stored in your collection." : "Removed from collection.", "success");
+    } catch (err) {
+      showToast("Failed to update collection.", "error");
+    }
+  };
+
+  const handleToggleLike = async () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    try {
+      const { data } = await api.post(`/notes/${note?._id}/like`);
+      setIsLiked(data.liked);
+      setNote(prev => prev ? { ...prev, likes: data.liked ? [...prev.likes, user!._id] : prev.likes.filter(id => id !== user!._id) } : null);
+      showToast(data.liked ? "Asset appreciated!" : "Removed appreciation.", "success");
+    } catch (err) {
+      showToast("Failed to process appreciation.", "error");
+    }
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    showToast("Link copied to clipboard!", "success");
   };
 
   if (loading) return (
@@ -182,6 +242,14 @@ export default function NoteDetailPage() {
                     <span className="text-sm text-white font-bold">{note.teacher || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center py-3 border-b border-white/5">
+                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Views</span>
+                    <span className="text-sm text-white font-bold">{note.views || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-white/5">
+                    <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Appreciations</span>
+                    <span className="text-sm text-white font-bold">{note.likes?.length || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-white/5">
                     <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Downloads</span>
                     <span className="text-sm text-white font-bold">{note.downloads}</span>
                   </div>
@@ -191,18 +259,50 @@ export default function NoteDetailPage() {
                   </div>
                </div>
 
-               <button 
-                onClick={handleDownload}
-                className="group w-full py-4 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
-               >
-                 <motion.div
-                  whileHover={{ y: [0, 2, 0] }}
-                  transition={{ duration: 0.5, repeat: Infinity }}
+               <div className="space-y-3">
+                 <div className="flex gap-2">
+                   <button 
+                    disabled={downloading}
+                    onClick={handleDownload}
+                    className="group flex-1 py-4 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-indigo-50 transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                   >
+                     {downloading ? (
+                       <Loader2 className="w-4 h-4 animate-spin" />
+                     ) : (
+                       <Download className="w-4 h-4" />
+                     )}
+                     {downloading ? "Syncing..." : "Download"}
+                   </button>
+                   <button 
+                    onClick={handleToggleLike}
+                    className={`aspect-square w-14 rounded-2xl border flex items-center justify-center transition-all active:scale-95 ${
+                      isLiked 
+                      ? 'bg-rose-500/10 border-rose-500/50 text-rose-500 shadow-lg shadow-rose-500/10' 
+                      : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
+                    }`}
+                   >
+                     <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                   </button>
+                   <button 
+                    onClick={handleShare}
+                    className="aspect-square w-14 rounded-2xl border border-white/10 bg-white/5 text-zinc-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                   >
+                     <Share2 className="w-5 h-5" />
+                   </button>
+                 </div>
+
+                 <button 
+                  onClick={handleToggleSave}
+                  className={`w-full py-4 rounded-2xl border flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${
+                    isSaved 
+                    ? 'bg-indigo-600/10 border-indigo-500/50 text-indigo-400' 
+                    : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                  }`}
                  >
-                   <Download className="w-4 h-4" />
-                 </motion.div>
-                 Secure Download
-               </button>
+                   {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                   {isSaved ? "Saved to Collection" : "Add to Favorites"}
+                 </button>
+               </div>
 
             </div>
           </aside>

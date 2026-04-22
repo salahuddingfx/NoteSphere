@@ -17,6 +17,7 @@ interface NotePreviewProps {
 export default function NotePreview({ fileUrl, fileType, title }: NotePreviewProps) {
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
 
   const isImage = ["jpg", "jpeg", "png", "webp"].includes(fileType.toLowerCase());
@@ -54,23 +55,40 @@ export default function NotePreview({ fileUrl, fileType, title }: NotePreviewPro
       {/* Preview Content */}
       <div className="aspect-[4/3] w-full relative bg-zinc-900/50 flex items-center justify-center">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center z-20 bg-zinc-900">
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-zinc-900/80 backdrop-blur-sm gap-4">
             <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Decrypting Asset...</p>
           </div>
         )}
 
-        {isImage ? (
+        {hasError ? (
+          <div className="flex flex-col items-center gap-4 text-zinc-500">
+             <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+               <FileText className="w-8 h-8 opacity-20" />
+             </div>
+             <p className="text-xs font-bold uppercase tracking-widest">Preview Blocked by Browser</p>
+             <button onClick={() => window.open(fileUrl, "_blank")} className="text-[10px] text-indigo-400 font-black uppercase tracking-widest hover:underline">Open in New Tab</button>
+          </div>
+        ) : isImage ? (
           <img 
             src={fileUrl} 
             alt={title} 
             className="max-h-full max-w-full object-contain"
             onLoad={() => setLoading(false)}
+            onError={() => {
+              setLoading(false);
+              setHasError(true);
+            }}
           />
         ) : isPDF ? (
           <iframe
             src={`https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`}
             className="w-full h-full border-none"
             onLoad={() => setLoading(false)}
+            onError={() => {
+              setLoading(false);
+              setHasError(true);
+            }}
             title={title}
           />
         ) : (

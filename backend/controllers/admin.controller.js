@@ -83,7 +83,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 const updateUserRole = asyncHandler(async (req, res) => {
   const { role } = req.body;
-  const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true }).select("-password");
+  const user = await User.findByIdAndUpdate(req.params.id, { role }, { returnDocument: "after" }).select("-password");
   res.status(200).json({ success: true, user });
 });
 
@@ -93,7 +93,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const updateUserDetails = asyncHandler(async (req, res) => {
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).select("-password");
+  const user = await User.findByIdAndUpdate(req.params.id, req.body, { returnDocument: "after", runValidators: true }).select("-password");
   res.status(200).json({ success: true, user });
 });
 
@@ -105,7 +105,7 @@ const getAllNotes = asyncHandler(async (req, res) => {
 
 const verifyNote = asyncHandler(async (req, res) => {
   const { isVerified } = req.body;
-  const note = await Note.findByIdAndUpdate(req.params.id, { isVerified }, { new: true });
+  const note = await Note.findByIdAndUpdate(req.params.id, { isVerified }, { returnDocument: "after" });
   res.status(200).json({ success: true, note });
 });
 
@@ -124,7 +124,7 @@ const updateSettings = asyncHandler(async (req, res) => {
   if (!settings) {
     settings = await Setting.create(req.body);
   } else {
-    settings = await Setting.findOneAndUpdate({}, req.body, { new: true });
+    settings = await Setting.findOneAndUpdate({}, req.body, { returnDocument: "after" });
   }
   res.status(200).json({ success: true, settings });
 });

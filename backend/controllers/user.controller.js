@@ -144,11 +144,49 @@ const getMyNotes = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, notes });
 });
 
+const toggleSaveNote = asyncHandler(async (req, res) => {
+  const { noteId } = req.body;
+  const user = await User.findById(req.user.id);
+  
+  if (!user) throw new ApiError(404, "User not found");
+
+  const noteIndex = user.savedNotes.indexOf(noteId);
+  if (noteIndex > -1) {
+    user.savedNotes.splice(noteIndex, 1);
+  } else {
+    user.savedNotes.push(noteId);
+  }
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    saved: noteIndex === -1,
+    savedNotes: user.savedNotes,
+  });
+});
+
+const getSavedNotes = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id).populate({
+    path: "savedNotes",
+    populate: { path: "author", select: "name avatar department semester" }
+  });
+  
+  if (!user) throw new ApiError(404, "User not found");
+
+  res.status(200).json({
+    success: true,
+    notes: user.savedNotes,
+  });
+});
+
 module.exports = {
   getLeaderboard,
   updateProfile,
   uploadAvatarPhoto,
   getContributionStats,
-  getMyNotes
+  getMyNotes,
+  toggleSaveNote,
+  getSavedNotes
 };
 

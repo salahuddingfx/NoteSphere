@@ -65,10 +65,9 @@ export default function ContributionChart() {
            <div className="h-full w-full flex items-center justify-center">
               <div className="h-8 w-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
            </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-            <AreaChart data={data}>
-
+        ) : data.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorNotes" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
@@ -107,6 +106,13 @@ export default function ContributionChart() {
               />
             </AreaChart>
           </ResponsiveContainer>
+        ) : (
+          <div className="h-full w-full flex flex-col items-center justify-center text-zinc-600 gap-2 opacity-50">
+             <div className="h-12 w-12 rounded-2xl border border-white/5 flex items-center justify-center">
+                <AreaChart className="w-6 h-6" />
+             </div>
+             <p className="text-[10px] font-black uppercase tracking-widest">No activity data yet</p>
+          </div>
         )}
       </div>
     </div>

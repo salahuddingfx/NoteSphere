@@ -147,13 +147,13 @@ export default function UploadPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <CustomSelect 
                 label="Department" 
-                options={["CSE", "EEE", "BBA", "Textile", "Civil", "Mechanical", "Architecture", "Pharmacy"]} 
+                options={["CSE", "EEE", "BBA", "Textile", "Civil", "Mechanical", "Architecture", "Pharmacy"].map(opt => ({ value: opt, label: opt }))} 
                 value={department} 
                 onChange={setDepartment} 
               />
               <CustomSelect 
                 label="Semester" 
-                options={["Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8"]} 
+                options={["Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8"].map(opt => ({ value: opt, label: opt }))} 
                 value={semester} 
                 onChange={setSemester} 
               />

@@ -7,7 +7,7 @@ import AuthGate from "@/components/auth/AuthGate";
 import { useAuthStore } from "@/store/auth.store";
 import { getUserRank } from "@/lib/ranks";
 import { api } from "@/lib/api";
-import { Building2, Zap, TrendingUp, Diamond, Award, BookOpen, ChevronRight, Loader2 } from "lucide-react";
+import { Building2, Zap, TrendingUp, Diamond, Award, BookOpen, ChevronRight, Loader2, Bookmark, FolderOpen, History } from "lucide-react";
 import dynamic from "next/dynamic";
 
 import ContributionChart from "@/components/dashboard/ContributionChart";
@@ -20,7 +20,10 @@ const DynamicThreeBadge = dynamic(() => import("@/components/ui/ThreeBadge"), { 
 export default function DashboardPage() {
   const { user, logout } = useAuthStore();
   const [myNotes, setMyNotes] = useState<any[]>([]);
+  const [savedNotes, setSavedNotes] = useState<any[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(true);
+  const [loadingSaved, setLoadingSaved] = useState(true);
+  const [activeTab, setActiveTab] = useState<"history" | "saved">("history");
 
   // Calculate Level Progress
   const currentXP = user?.xp || 0;
@@ -28,17 +31,22 @@ export default function DashboardPage() {
   const progress = (levelXP / 500) * 100;
 
   useEffect(() => {
-    const fetchMyNotes = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const { data } = await api.get("/users/notes");
-        setMyNotes(data.notes);
+        const [myNotesRes, savedNotesRes] = await Promise.all([
+          api.get("/users/notes"),
+          api.get("/users/saved-notes")
+        ]);
+        setMyNotes(myNotesRes.data.notes);
+        setSavedNotes(savedNotesRes.data.notes);
       } catch (err) {
-        console.error("Failed to fetch my notes", err);
+        console.error("Failed to fetch dashboard data", err);
       } finally {
         setLoadingNotes(false);
+        setLoadingSaved(false);
       }
     };
-    fetchMyNotes();
+    fetchDashboardData();
   }, []);
 
   if (!user) return null;
@@ -144,48 +152,100 @@ export default function DashboardPage() {
         {/* Contribution List */}
         <section className="mt-12">
            <div className="rounded-[3rem] border border-white/5 bg-white/5 p-10 backdrop-blur-3xl overflow-hidden">
-              <header className="flex items-center justify-between mb-10">
-                 <h2 className="text-2xl font-black text-white tracking-tighter uppercase">Contribution History</h2>
+              <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-6">
+                 <div className="flex gap-4">
+                    <button 
+                      onClick={() => setActiveTab("history")}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
+                    >
+                      <History className="w-4 h-4" />
+                      Contributions
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab("saved")}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'saved' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
+                    >
+                      <Bookmark className="w-4 h-4" />
+                      Collection
+                    </button>
+                 </div>
                  <Link href="/upload" className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors">Start Upload →</Link>
               </header>
 
               <div className="grid gap-4">
-                 {loadingNotes ? (
-                   <div className="py-20 flex flex-col items-center justify-center gap-4">
-                      <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-                      <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Accessing Vault Records...</p>
-                   </div>
-                 ) : myNotes.length > 0 ? (
-                   myNotes.map((note) => (
-                    <Link 
-                      key={note._id} 
-                      href={`/notes/${note.slug}`}
-                      className="group flex flex-col md:flex-row md:items-center justify-between rounded-3xl border border-white/5 bg-black/20 p-6 hover:border-indigo-500/30 transition-all"
-                    >
-                      <div className="flex items-center gap-4">
-                         <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">
-                            {note.fileType?.toUpperCase().slice(0, 3) || "PDF"}
-                         </div>
-                         <div>
-                            <p className="text-sm font-bold text-white">{note.title}</p>
-                            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{note.subject} • {note.department}</p>
-                         </div>
+                 {activeTab === "history" ? (
+                    loadingNotes ? (
+                      <div className="py-20 flex flex-col items-center justify-center gap-4">
+                         <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                         <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Accessing Vault Records...</p>
                       </div>
-                      <div className="flex items-center gap-4">
-                         {note.isVerified ? (
-                           <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20">Verified</span>
-                         ) : (
-                           <span className="text-[8px] font-black uppercase tracking-widest text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-lg border border-yellow-400/20">Pending</span>
-                         )}
-                         <span className="text-[10px] text-zinc-600 font-bold">{new Date(note.createdAt).toLocaleDateString()}</span>
+                    ) : myNotes.length > 0 ? (
+                      myNotes.map((note) => (
+                       <Link 
+                         key={note._id} 
+                         href={`/notes/${note.slug}`}
+                         className="group flex flex-col md:flex-row md:items-center justify-between rounded-3xl border border-white/5 bg-black/20 p-6 hover:border-indigo-500/30 transition-all"
+                       >
+                         <div className="flex items-center gap-4">
+                            <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">
+                               {note.fileType?.toUpperCase().slice(0, 3) || "PDF"}
+                            </div>
+                            <div>
+                               <p className="text-sm font-bold text-white">{note.title}</p>
+                               <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{note.subject} • {note.department}</p>
+                            </div>
+                         </div>
+                         <div className="flex items-center gap-4">
+                            {note.isVerified ? (
+                              <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20">Verified</span>
+                            ) : (
+                              <span className="text-[8px] font-black uppercase tracking-widest text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-lg border border-yellow-400/20">Pending</span>
+                            )}
+                            <span className="text-[10px] text-zinc-600 font-bold">{new Date(note.createdAt).toLocaleDateString()}</span>
+                         </div>
+                       </Link>
+                     ))
+                    ) : (
+                      <div className="py-20 text-center rounded-[2rem] border border-dashed border-white/5">
+                         <p className="text-zinc-600 font-bold uppercase tracking-widest text-sm">No contributions yet</p>
+                         <Link href="/upload" className="inline-block mt-4 text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">Start Uploading →</Link>
                       </div>
-                    </Link>
-                  ))
+                    )
                  ) : (
-                   <div className="py-20 text-center rounded-[2rem] border border-dashed border-white/5">
-                      <p className="text-zinc-600 font-bold uppercase tracking-widest text-sm">No contributions yet</p>
-                      <Link href="/upload" className="inline-block mt-4 text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">Start Uploading →</Link>
-                   </div>
+                    loadingSaved ? (
+                      <div className="py-20 flex flex-col items-center justify-center gap-4">
+                         <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                         <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Retrieving Collection...</p>
+                      </div>
+                    ) : savedNotes.length > 0 ? (
+                      savedNotes.map((note) => (
+                       <Link 
+                         key={note._id} 
+                         href={`/notes/${note.slug}`}
+                         className="group flex flex-col md:flex-row md:items-center justify-between rounded-3xl border border-white/5 bg-black/20 p-6 hover:border-indigo-500/30 transition-all"
+                       >
+                         <div className="flex items-center gap-4">
+                            <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">
+                               <Bookmark className="w-4 h-4" />
+                            </div>
+                            <div>
+                               <p className="text-sm font-bold text-white">{note.title}</p>
+                               <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{note.subject} • By {note.author?.name || 'Unknown'}</p>
+                            </div>
+                         </div>
+                         <div className="flex items-center gap-4">
+                            <span className="text-[10px] text-zinc-600 font-bold">Saved on {new Date(note.createdAt).toLocaleDateString()}</span>
+                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-indigo-400 transition-colors" />
+                         </div>
+                       </Link>
+                     ))
+                    ) : (
+                      <div className="py-20 text-center rounded-[2rem] border border-dashed border-white/5">
+                         <FolderOpen className="w-8 h-8 text-zinc-600 mx-auto mb-4" />
+                         <p className="text-zinc-600 font-bold uppercase tracking-widest text-sm">Your collection is empty</p>
+                         <Link href="/notes" className="inline-block mt-4 text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">Explore Notes →</Link>
+                      </div>
+                    )
                  )}
               </div>
            </div>

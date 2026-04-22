@@ -23,6 +23,8 @@ export type AuthUser = {
   badges: string[];
   avatar: string;
   bio?: string;
+  savedNotes: string[];
+  _id: string;
   socials?: {
     instagram: string;
     facebook: string;

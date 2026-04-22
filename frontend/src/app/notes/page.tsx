@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 import { NoteSkeleton } from "@/components/ui/Skeleton";
 import CustomSelect from "@/components/ui/CustomSelect";
 import Link from "next/link";
-import { Search, Zap, FileText, ShieldCheck, User, ChevronRight } from "lucide-react";
+import { Search, Zap, FileText, ShieldCheck, User, ChevronRight, Eye, Download } from "lucide-react";
 
 interface Note {
   _id: string;
@@ -20,6 +20,7 @@ interface Note {
   subjectCode?: string;
   teacher?: string;
   downloads: number;
+  views: number;
   isVerified: boolean;
   author: {
     name: string;
@@ -181,10 +182,14 @@ export default function NotesPage() {
                         <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest">{note.department} • {note.semester} Sem</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase">{note.downloads}</span>
-                      <div className="h-8 w-8 rounded-full border border-white/10 flex items-center justify-center text-zinc-400 group-hover:bg-white group-hover:text-black transition-all">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1.5">
+                        <Eye className="w-3 h-3 text-zinc-500" />
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase">{note.views || 0}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Download className="w-3 h-3 text-zinc-500" />
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase">{note.downloads}</span>
                       </div>
                     </div>
                   </div>
