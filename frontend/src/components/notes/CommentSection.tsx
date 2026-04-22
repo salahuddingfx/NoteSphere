@@ -6,6 +6,8 @@ import { MessageSquare, Send, Heart, Trash2, Reply, Loader2 } from "lucide-react
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
 import { useToast } from "@/components/ui/Toast";
+import Link from "next/link";
+
 
 interface Comment {
   _id: string;
@@ -13,12 +15,14 @@ interface Comment {
   author: {
     _id: string;
     name: string;
+    username: string;
     avatar: string;
   };
   likes: string[];
   createdAt: string;
   parentComment?: string;
 }
+
 
 export default function CommentSection({ noteId }: { noteId: string }) {
   const [comments, setComments] = useState<Comment[]>([]);
