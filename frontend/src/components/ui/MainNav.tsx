@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuthStore } from "@/store/auth.store";
 import { getUserRank } from "@/lib/ranks";
+import NotificationBell from "../layout/NotificationBell";
+
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -64,8 +66,10 @@ export default function MainNav() {
 
         {/* User Profile / Auth */}
         <div className="hidden lg:flex items-center gap-4">
+          {isAuthenticated && <NotificationBell />}
           {isAuthenticated ? (
             <Link href="/dashboard" className="flex items-center gap-3 rounded-2xl bg-white/5 p-1 pr-4 border border-white/5 hover:border-white/10 transition-all">
+
               <img 
                 src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`} 
                 className="h-9 w-9 rounded-xl border border-white/10 object-cover" 
