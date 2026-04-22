@@ -250,8 +250,12 @@ export default function NoteDetailPage() {
             {/* AI Summary Section */}
             <NoteSummary noteId={note._id} initialSummary={note.aiSummary} />
 
+            {/* Interactive Assessment */}
+            <QuizGenerator note={note} />
+
             {/* Discussion System */}
             <CommentSection noteId={note._id} />
+
           </div>
 
 
