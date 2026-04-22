@@ -16,6 +16,7 @@
     "buffer": "^6.0.3",
     "framer-motion": "^12.38.0",
     "gsap": "^3.15.0",
+    "kbar": "^0.1.0-beta.48",
     "lucide-react": "^1.8.0",
     "next": "^14.2.33",
     "next-pwa": "^5.6.0",
