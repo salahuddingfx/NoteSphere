@@ -88,41 +88,7 @@ export default function CommandPalette({ children }: { children: React.ReactNode
               </div>
             </div>
             
-            <KBarResults
-              items={useMatches().results}
-              onRender={({ item, active }) =>
-                typeof item === "string" ? (
-                  <div className="px-6 py-3 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">
-                    {item}
-                  </div>
-                ) : (
-                  <div 
-                    className={`px-6 py-4 flex items-center justify-between cursor-pointer transition-all ${
-                      active ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' : 'text-zinc-400 hover:bg-white/5'
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`${active ? 'text-indigo-400' : 'text-zinc-500'}`}>
-                        {item.icon}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold tracking-tight">{item.name}</span>
-                        {item.subtitle && <span className="text-[10px] opacity-60 uppercase tracking-widest font-black">{item.subtitle}</span>}
-                      </div>
-                    </div>
-                    {item.shortcut?.length ? (
-                      <div className="flex items-center gap-1">
-                        {item.shortcut.map((sc) => (
-                          <kbd key={sc} className="px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-zinc-500 font-black uppercase">
-                            {sc}
-                          </kbd>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                )
-              }
-            />
+            <RenderResults />
 
             <div className="px-6 py-4 border-t border-white/5 bg-white/[0.02]">
                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">
@@ -136,4 +102,47 @@ export default function CommandPalette({ children }: { children: React.ReactNode
     </KBarProvider>
   );
 }
+
+function RenderResults() {
+  const { results } = useMatches();
+
+  return (
+    <KBarResults
+      items={results}
+      onRender={({ item, active }) =>
+        typeof item === "string" ? (
+          <div className="px-6 py-3 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">
+            {item}
+          </div>
+        ) : (
+          <div 
+            className={`px-6 py-4 flex items-center justify-between cursor-pointer transition-all ${
+              active ? 'bg-indigo-600/10 border-l-4 border-indigo-500 text-white' : 'text-zinc-400 hover:bg-white/5'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              <div className={`${active ? 'text-indigo-400' : 'text-zinc-500'}`}>
+                {item.icon as React.ReactNode}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-bold tracking-tight">{item.name}</span>
+                {item.subtitle && <span className="text-[10px] opacity-60 uppercase tracking-widest font-black">{item.subtitle}</span>}
+              </div>
+            </div>
+            {item.shortcut?.length ? (
+              <div className="flex items-center gap-1">
+                {item.shortcut.map((sc) => (
+                  <kbd key={sc} className="px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-zinc-500 font-black uppercase">
+                    {sc}
+                  </kbd>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        )
+      }
+    />
+  );
+}
+
 
