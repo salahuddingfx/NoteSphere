@@ -88,7 +88,12 @@ export default function LeaderboardPage() {
                       <div className="relative">
                         <div className={`h-20 w-20 rounded-[1.8rem] bg-gradient-to-br ${color} p-[2px]`}>
                           <div className="h-full w-full rounded-[1.6rem] bg-black p-[2px]">
-                            <img src={user.avatar} alt={user.name} className="h-full w-full rounded-[1.4rem] object-cover" />
+                            <img 
+                              src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
+                              alt={user.name} 
+                              className="h-full w-full rounded-[1.4rem] object-cover" 
+                            />
+
                           </div>
                         </div>
                         <div className={`absolute -bottom-2 -right-2 h-10 w-10 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-black font-black text-sm shadow-xl border-4 border-black`}>
