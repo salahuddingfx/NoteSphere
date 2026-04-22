@@ -10,6 +10,8 @@ import { FileText, Download, User, Calendar, Tag, ShieldCheck, ArrowLeft, Eye, B
 import NoteSummary from "@/components/notes/NoteSummary";
 import NotePreview from "@/components/notes/NotePreview";
 import { useToast } from "@/components/ui/Toast";
+import CommentSection from "@/components/notes/CommentSection";
+
 
 interface Note {
   _id: string;
