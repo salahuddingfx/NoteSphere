@@ -6,7 +6,7 @@ import MainNav from "@/components/ui/MainNav";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
-import { FileText, Download, User, Calendar, Tag, ShieldCheck, ArrowLeft, Eye, Bookmark, BookmarkCheck, Loader2, Heart, Share2, Link } from "lucide-react";
+import { FileText, Download, User, Calendar, Tag, ShieldCheck, ArrowLeft, Eye, Bookmark, BookmarkCheck, Loader2, Heart, Share2, Link as LinkIcon } from "lucide-react";
 import NoteSummary from "@/components/notes/NoteSummary";
 import NotePreview from "@/components/notes/NotePreview";
 import { useToast } from "@/components/ui/Toast";
