@@ -156,6 +156,43 @@ export default function DashboardPage() {
             </div>
           </div>
         </motion.section>
+        
+        {/* Recently Viewed Section */}
+        {recentlyViewed.length > 0 && (
+          <section className="mt-12">
+             <div className="flex items-center justify-between mb-6">
+                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-zinc-500 flex items-center gap-2">
+                   <History className="w-4 h-4 text-indigo-400" />
+                   Recently Viewed Assets
+                </h3>
+             </div>
+             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {recentlyViewed.map((note) => (
+                  <Link 
+                    key={note._id} 
+                    href={`/notes/${note.slug}`}
+                    className="group relative rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl hover:border-indigo-500/30 transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                       <span className="px-2 py-1 rounded-lg bg-indigo-500/10 text-[8px] font-black uppercase tracking-widest text-indigo-400">
+                          {note.fileType}
+                       </span>
+                       {note.isVerified && (
+                          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                       )}
+                    </div>
+                    <h4 className="text-sm font-bold text-white mb-2 line-clamp-1 group-hover:text-indigo-400 transition-colors">
+                       {note.title}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest truncate">
+                       {note.subjectCode ? `${note.subjectCode} • ` : ""}{note.subject}
+                    </p>
+                  </Link>
+                ))}
+             </div>
+          </section>
+        )}
+
 
         {/* Contribution List */}
         <section className="mt-12">
