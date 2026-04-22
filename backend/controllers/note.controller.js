@@ -89,12 +89,41 @@ const createNote = asyncHandler(async (req, res) => {
   });
 
 
+  // Badge Awarding Logic
+  const User = require("../models/User");
+  const user = await User.findById(req.user._id);
+  
+  const subjectCount = await Note.countDocuments({ 
+    author: user._id, 
+    subject: subject 
+  });
+
+  let newBadge = null;
+  const badgeMap = {
+    "Mathematics": "Math Wizard",
+    "Computer Science": "Code Ninja",
+    "Electrical Engineering": "Circuit Master",
+    "Physics": "Quantum Explorer",
+    "Chemistry": "Alchemist"
+  };
+
+  const badgeName = badgeMap[subject];
+  if (badgeName && subjectCount >= 5 && !user.badges.includes(badgeName)) {
+    user.badges.push(badgeName);
+    user.xp += 1000; // Large bonus for subject mastery
+    user.level = Math.floor(user.xp / 500) + 1;
+    await user.save();
+    newBadge = badgeName;
+  }
+
   res.status(201).json({
     success: true,
-    message: "Note uploaded successfully",
+    message: newBadge ? `Mastery Achieved! Awarded: ${newBadge}` : "Note uploaded successfully",
     note,
+    badge: newBadge
   });
 });
+
 
 const getNotes = asyncHandler(async (req, res) => {
   const { search, department, semester, subject, subjectCode, teacher, fileType, category, tag, verified, sort = "latest" } = req.query;
