@@ -1,4 +1,7 @@
+const Comment = require("../models/Comment");
+const Note = require("../models/Note");
 const Notification = require("../models/Notification");
+
 
 exports.addComment = async (req, res) => {
   try {
