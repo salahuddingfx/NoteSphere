@@ -12,7 +12,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { Activity } from "lucide-react";
+
 export default function ContributionChart() {
+
   const [view, setView] = useState("daily");
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
