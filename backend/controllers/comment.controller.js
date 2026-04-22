@@ -15,7 +15,7 @@ exports.addComment = async (req, res) => {
       parentComment: parentCommentId || null,
     });
 
-    const populatedComment = await comment.populate("author", "name avatar");
+    const populatedComment = await comment.populate("author", "name username avatar");
 
     res.status(201).json({ success: true, comment: populatedComment });
   } catch (err) {
