@@ -5,7 +5,8 @@ import "./globals.css";
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
-  themeColor: "#6366f1",
+  themeColor: "#22d3ee",
+
   width: "device-width",
   initialScale: 1,
 };
