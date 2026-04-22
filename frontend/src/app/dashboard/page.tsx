@@ -49,7 +49,15 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, []);
 
+  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+    setRecentlyViewed(saved);
+  }, []);
+
   if (!user) return null;
+
 
   return (
     <AuthGate>
