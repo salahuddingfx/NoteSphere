@@ -273,12 +273,24 @@ const toggleLike = asyncHandler(async (req, res) => {
 
   await note.save();
 
+  // Create Notification for Like
+  if (likedIndex < 0 && note.author.toString() !== userId) {
+    await Notification.create({
+      recipient: note.author,
+      sender: req.user._id,
+      type: "like",
+      note: note._id,
+      message: `${req.user.name} appreciated your asset: ${note.title}`
+    });
+  }
+
   res.status(200).json({
     success: true,
     liked: likedIndex < 0,
     likesCount: note.likes.length,
   });
 });
+
 
 const trackDownload = asyncHandler(async (req, res) => {
   const note = await Note.findById(req.params.id);
