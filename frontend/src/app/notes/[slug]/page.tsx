@@ -58,6 +58,25 @@ export default function NoteDetailPage() {
           setIsSaved(user.savedNotes?.includes(data.note._id));
           setIsLiked(data.note.likes?.includes(user._id));
         }
+
+        // Add to Recently Viewed
+        if (data.note) {
+          const recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+          const updated = [
+            {
+              _id: data.note._id,
+              slug: data.note.slug,
+              title: data.note.title,
+              subject: data.note.subject,
+              subjectCode: data.note.subjectCode,
+              fileType: data.note.fileType,
+              author: data.note.author,
+              isVerified: data.note.isVerified
+            },
+            ...recentlyViewed.filter((n: any) => n._id !== data.note._id)
+          ].slice(0, 4); // Keep last 4
+          localStorage.setItem("recentlyViewed", JSON.stringify(updated));
+        }
       } catch (err) {
         console.error("Failed to fetch note", err);
       } finally {
@@ -66,6 +85,7 @@ export default function NoteDetailPage() {
     };
     if (slug) fetchNote();
   }, [slug, user]);
+
 
   const handleDownload = async () => {
     if (!isAuthenticated) {
