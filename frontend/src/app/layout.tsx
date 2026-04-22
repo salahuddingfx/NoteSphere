@@ -70,6 +70,8 @@ import { ToastProvider } from "@/components/ui/Toast";
 import NexusAI from "@/components/ai/NexusAI";
 import MainNav from "@/components/ui/MainNav";
 import NextTopLoader from "nextjs-toploader";
+import CommandPalette from "@/components/ui/CommandPalette";
+
 
 
 
