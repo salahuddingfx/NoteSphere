@@ -11,6 +11,8 @@ import NoteSummary from "@/components/notes/NoteSummary";
 import NotePreview from "@/components/notes/NotePreview";
 import { useToast } from "@/components/ui/Toast";
 import CommentSection from "@/components/notes/CommentSection";
+import LearningPath from "@/components/notes/LearningPath";
+
 
 
 interface Note {

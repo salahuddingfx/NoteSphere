@@ -113,8 +113,48 @@ const generateLearningPath = asyncHandler(async (req, res) => {
   }
 });
 
+const generateQuiz = asyncHandler(async (req, res) => {
+  const { title, subject, description } = req.body;
+
+  const settings = await Setting.findOne();
+  const model = settings?.activeModel || DEFAULT_MODEL;
+
+  const prompt = `Create an interactive quiz based on the academic note: "${title}" (Subject: ${subject}).
+  
+  Description: ${description}
+
+  Provide exactly 5 multiple-choice questions in the following JSON format:
+  {
+    "questions": [
+      {
+        "question": "...",
+        "options": ["...", "...", "...", "..."],
+        "answerIndex": 0,
+        "explanation": "..."
+      },
+      ...
+    ]
+  }
+  Respond ONLY with the JSON.`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: model,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" }
+    });
+
+    const quiz = JSON.parse(response.choices[0].message.content);
+    res.status(200).json({ success: true, quiz });
+  } catch (err) {
+    throw new ApiError(500, "Failed to materialize quiz from the Nexus.");
+  }
+});
+
 module.exports = {
   chatWithAI,
-  generateLearningPath
+  generateLearningPath,
+  generateQuiz
 };
+
 
