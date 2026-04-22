@@ -5,5 +5,7 @@ const { protect } = require("../middlewares/auth.middleware");
 
 
 router.post("/chat", protect, aiController.chatWithAI);
+router.post("/learning-path", protect, aiController.generateLearningPath);
+
 
 module.exports = router;
