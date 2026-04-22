@@ -7,7 +7,7 @@ import AuthGate from "@/components/auth/AuthGate";
 import { useAuthStore } from "@/store/auth.store";
 import { getUserRank } from "@/lib/ranks";
 import { api } from "@/lib/api";
-import { Building2, Zap, TrendingUp, Diamond, Award, BookOpen, ChevronRight, Loader2, Bookmark, FolderOpen, History } from "lucide-react";
+import { Building2, Zap, TrendingUp, Diamond, Award, BookOpen, ChevronRight, Loader2, Bookmark, FolderOpen, History, Plus, Star, ShieldCheck } from "lucide-react";
 import dynamic from "next/dynamic";
 
 import ContributionChart from "@/components/dashboard/ContributionChart";
@@ -21,9 +21,11 @@ export default function DashboardPage() {
   const { user, logout } = useAuthStore();
   const [myNotes, setMyNotes] = useState<any[]>([]);
   const [savedNotes, setSavedNotes] = useState<any[]>([]);
+  const [collections, setCollections] = useState<any[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(true);
   const [loadingSaved, setLoadingSaved] = useState(true);
-  const [activeTab, setActiveTab] = useState<"history" | "saved">("history");
+  const [loadingCollections, setLoadingCollections] = useState(true);
+  const [activeTab, setActiveTab] = useState<"history" | "saved" | "playlists">("history");
 
   // Calculate Level Progress
   const currentXP = user?.xp || 0;
@@ -33,21 +35,25 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [myNotesRes, savedNotesRes] = await Promise.all([
+        const [myNotesRes, savedNotesRes, collectionsRes] = await Promise.all([
           api.get("/users/notes"),
-          api.get("/users/saved-notes")
+          api.get("/users/saved-notes"),
+          api.get("/collections")
         ]);
         setMyNotes(myNotesRes.data.notes);
         setSavedNotes(savedNotesRes.data.notes);
+        setCollections(collectionsRes.data.collections);
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
       } finally {
         setLoadingNotes(false);
         setLoadingSaved(false);
+        setLoadingCollections(false);
       }
     };
     fetchDashboardData();
   }, []);
+
 
   const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
 
@@ -213,6 +219,13 @@ export default function DashboardPage() {
                       <Bookmark className="w-4 h-4" />
                       Collection
                     </button>
+                    <button 
+                      onClick={() => setActiveTab("playlists")}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'playlists' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
+                    >
+                      <FolderOpen className="w-4 h-4" />
+                      Playlists
+                    </button>
                  </div>
                  <Link href="/upload" className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors">Start Upload →</Link>
               </header>
@@ -256,7 +269,7 @@ export default function DashboardPage() {
                          <Link href="/upload" className="inline-block mt-4 text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">Start Uploading →</Link>
                       </div>
                     )
-                 ) : (
+                 ) : activeTab === "saved" ? (
                     loadingSaved ? (
                       <div className="py-20 flex flex-col items-center justify-center gap-4">
                          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
@@ -291,7 +304,39 @@ export default function DashboardPage() {
                          <Link href="/notes" className="inline-block mt-4 text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">Explore Notes →</Link>
                       </div>
                     )
+                 ) : (
+                    loadingCollections ? (
+                      <div className="py-20 flex flex-col items-center justify-center gap-4">
+                         <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                         <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Scanning Nexus Playlists...</p>
+                      </div>
+                    ) : collections.length > 0 ? (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {collections.map((col) => (
+                          <div key={col._id} className="group rounded-3xl border border-white/5 bg-black/20 p-6 hover:border-indigo-500/30 transition-all">
+                             <div className="flex items-start justify-between mb-4">
+                                <div className={`h-12 w-12 rounded-2xl bg-${col.color || 'indigo'}-500/10 flex items-center justify-center text-${col.color || 'indigo'}-400`}>
+                                   <FolderOpen className="w-6 h-6" />
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">{col.notes?.length || 0} Assets</span>
+                             </div>
+                             <h4 className="text-lg font-bold text-white mb-1">{col.name}</h4>
+                             <p className="text-xs text-zinc-500 mb-6 line-clamp-2">{col.description || "Study playlist for optimized learning."}</p>
+                             <div className="flex gap-2">
+                                <button className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all">View Playlist</button>
+                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-20 text-center rounded-[2rem] border border-dashed border-white/5">
+                         <FolderOpen className="w-8 h-8 text-zinc-600 mx-auto mb-4" />
+                         <p className="text-zinc-600 font-bold uppercase tracking-widest text-sm">No study playlists created</p>
+                         <button className="inline-block mt-4 text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">Create Your First Playlist →</button>
+                      </div>
+                    )
                  )}
+
               </div>
            </div>
 
