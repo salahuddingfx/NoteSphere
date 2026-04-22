@@ -80,6 +80,41 @@ const chatWithAI = asyncHandler(async (req, res) => {
   });
 });
 
+const generateLearningPath = asyncHandler(async (req, res) => {
+  const { title, subject, description } = req.body;
+
+  const settings = await Setting.findOne();
+  const model = settings?.activeModel || DEFAULT_MODEL;
+
+  const prompt = `Act as an expert academic advisor. Create a step-by-step learning path (roadmap) for a student interested in: "${title}" (Subject: ${subject}).
+  
+  Description of current resource: ${description}
+
+  Provide exactly 5 steps in the following JSON format:
+  {
+    "steps": [
+      { "title": "...", "description": "...", "duration": "..." },
+      ...
+    ]
+  }
+  Ensure the steps go from fundamentals to advanced mastery related to this topic. Respond ONLY with the JSON.`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: model,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" }
+    });
+
+    const path = JSON.parse(response.choices[0].message.content);
+    res.status(200).json({ success: true, path });
+  } catch (err) {
+    throw new ApiError(500, "Failed to manifest learning path from the Nexus.");
+  }
+});
+
 module.exports = {
-  chatWithAI
+  chatWithAI,
+  generateLearningPath
 };
+
