@@ -26,8 +26,9 @@ exports.addComment = async (req, res) => {
 exports.getNoteComments = async (req, res) => {
   try {
     const comments = await Comment.find({ note: req.params.noteId })
-      .populate("author", "name avatar")
+      .populate("author", "name username avatar")
       .sort({ createdAt: -1 });
+
     
     // Group comments and replies (simple version)
     const mainComments = comments.filter(c => !c.parentComment);
