@@ -116,7 +116,15 @@ const createNote = asyncHandler(async (req, res) => {
     user.level = Math.floor(user.xp / 500) + 1;
     await user.save();
     newBadge = badgeName;
+
+    await Notification.create({
+      recipient: user._id,
+      sender: user._id, // System notifications can have same sender/recipient or a system user
+      type: "badge",
+      message: `Achievement Unlocked: ${badgeName}! +1000 XP granted.`
+    });
   }
+
 
   res.status(201).json({
     success: true,
