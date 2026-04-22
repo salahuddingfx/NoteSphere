@@ -57,47 +57,71 @@ export default function LeaderboardPage() {
           ) : (
             leaders.map((user, idx) => {
               const color = getRankColor(idx);
+              const tierName = idx === 0 ? "Elite Contributor" : idx === 1 ? "Gold Contributor" : idx === 2 ? "Silver Contributor" : null;
+              
               return (
-                <motion.article
-                  key={user.username}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group relative flex items-center justify-between rounded-[2rem] border border-white/5 bg-white/5 p-6 backdrop-blur-xl hover:border-white/10 transition-all cursor-default"
-                >
-                  <div className="flex items-center gap-6">
-                    <div className="relative">
-                      <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${color} p-[2px]`}>
-                        <div className="h-full w-full rounded-[14px] bg-black p-[2px]">
-                          <img src={user.avatar} alt={user.name} className="h-full w-full rounded-[12px] object-cover" />
+                <Link key={user.username} href={`/profile/${user.username}`}>
+                  <motion.article
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className={`group relative flex items-center justify-between rounded-[2.5rem] border p-8 backdrop-blur-xl transition-all ${
+                      idx === 0 ? 'border-amber-500/30 bg-amber-500/[0.03] shadow-2xl shadow-amber-500/10' :
+                      idx === 1 ? 'border-slate-300/30 bg-slate-300/[0.03]' :
+                      idx === 2 ? 'border-orange-600/30 bg-orange-600/[0.03]' :
+                      'border-white/5 bg-white/5'
+                    } hover:border-indigo-500/50 hover:bg-white/[0.07]`}
+                  >
+                    {tierName && (
+                      <div className={`absolute -top-3 left-10 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                        idx === 0 ? 'bg-amber-500 text-black' :
+                        idx === 1 ? 'bg-slate-300 text-black' :
+                        'bg-orange-600 text-white'
+                      }`}>
+                        {tierName}
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-6">
+                      <div className="relative">
+                        <div className={`h-20 w-20 rounded-[1.8rem] bg-gradient-to-br ${color} p-[2px]`}>
+                          <div className="h-full w-full rounded-[1.6rem] bg-black p-[2px]">
+                            <img src={user.avatar} alt={user.name} className="h-full w-full rounded-[1.4rem] object-cover" />
+                          </div>
+                        </div>
+                        <div className={`absolute -bottom-2 -right-2 h-10 w-10 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-black font-black text-sm shadow-xl border-4 border-black`}>
+                          {idx + 1}
                         </div>
                       </div>
-                      <div className={`absolute -bottom-2 -right-2 h-8 w-8 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-black font-black text-sm shadow-lg`}>
-                        {idx + 1}
+                      <div>
+                        <h3 className="text-2xl font-black text-white group-hover:text-indigo-400 transition-colors tracking-tighter">
+                          {user.name || user.username}
+                        </h3>
+                        <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${getUserRank(user.level).color}`}>
+                          {getUserRank(user.level).name} • Level {user.level}
+                        </p>
                       </div>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">{user.name || user.username}</h3>
-                      <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${getUserRank(user.level).color}`}>
-                        {getUserRank(user.level).name}
+                    
+                    <div className="text-right">
+                      <p className="text-3xl font-black text-white tracking-tighter">
+                        {user.xp.toLocaleString()} 
+                        <span className="text-[10px] text-zinc-600 uppercase tracking-widest ml-2">Rank XP</span>
                       </p>
+                      <div className="mt-3 h-1.5 w-40 bg-white/5 rounded-full overflow-hidden">
+                         <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min((user.xp / (leaders[0].xp || 1)) * 100, 100)}%` }}
+                          transition={{ duration: 1.5, delay: 0.5 }}
+                          className={`h-full bg-gradient-to-r ${color}`} 
+                         />
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="text-right">
-                    <p className="text-2xl font-black text-white tracking-tighter">{user.xp} <span className="text-xs text-zinc-500 uppercase tracking-widest ml-1">XP</span></p>
-                    <div className="mt-2 h-1 w-32 bg-white/5 rounded-full overflow-hidden">
-                       <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.min((user.xp / 5000) * 100, 100)}%` }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
-                        className={`h-full bg-gradient-to-r ${color}`} 
-                       />
-                    </div>
-                  </div>
-                </motion.article>
+                  </motion.article>
+                </Link>
               );
             })
+
           )}
         </div>
 
