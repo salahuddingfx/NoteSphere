@@ -212,14 +212,19 @@ function CommentItem({
       <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 backdrop-blur-xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <img src={comment.author.avatar} alt={comment.author.name} className="h-10 w-10 rounded-xl border border-white/10" />
+            <Link href={`/profile/${comment.author.username}`}>
+              <img src={comment.author.avatar} alt={comment.author.name} className="h-10 w-10 rounded-xl border border-white/10 hover:scale-105 transition-transform" />
+            </Link>
             <div>
-              <p className="text-sm font-bold text-white">{comment.author.name}</p>
+              <Link href={`/profile/${comment.author.username}`} className="text-sm font-bold text-white hover:text-indigo-400 transition-colors">
+                {comment.author.name}
+              </Link>
               <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">
                 {new Date(comment.createdAt).toLocaleDateString()} at {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
           </div>
+
           <div className="flex items-center gap-1">
             {isAuthor && (
               <button onClick={() => onDelete(comment._id)} className="p-2 text-zinc-600 hover:text-red-400 transition-colors">
