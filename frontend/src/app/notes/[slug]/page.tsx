@@ -257,12 +257,17 @@ export default function NoteDetailPage() {
           <aside className="space-y-6">
             <div className="rounded-[2rem] border border-white/5 bg-white/5 p-8 backdrop-blur-xl sticky top-32">
                <div className="flex items-center gap-4 mb-8">
-                 <img src={note.author.avatar} alt={note.author.name} className="h-14 w-14 rounded-2xl border border-white/10 object-cover" />
+                 <Link href={`/profile/${note.author.username}`}>
+                   <img src={note.author.avatar} alt={note.author.name} className="h-14 w-14 rounded-2xl border border-white/10 object-cover hover:scale-105 transition-transform" />
+                 </Link>
                  <div>
-                    <p className="text-white font-bold">{note.author.name}</p>
-                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">{note.department} • {note.semester} Sem</p>
+                    <Link href={`/profile/${note.author.username}`} className="text-white font-bold hover:text-indigo-400 transition-colors">
+                      {note.author.name}
+                    </Link>
+                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">{note.author.department} • {note.author.semester} Sem</p>
                  </div>
                </div>
+
 
                <div className="space-y-4 mb-8">
                   <div className="flex justify-between items-center py-3 border-b border-white/5">
