@@ -79,10 +79,11 @@ export default function DashboardPage() {
             <header className="flex flex-col gap-8 rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl md:flex-row md:items-center">
               <div className="relative h-32 w-32 shrink-0">
                 <img 
-                  src={user.avatar || "/default-avatar.png"} 
+                  src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
                   alt={user.name} 
                   className="h-full w-full rounded-[2.5rem] object-cover ring-4 ring-indigo-500/20"
                 />
+
                 <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl">
                   <Zap className="h-5 w-5" />
                 </div>
