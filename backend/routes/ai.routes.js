@@ -6,6 +6,8 @@ const { protect } = require("../middlewares/auth.middleware");
 
 router.post("/chat", protect, aiController.chatWithAI);
 router.post("/learning-path", protect, aiController.generateLearningPath);
+router.post("/quiz", protect, aiController.generateQuiz);
+
 
 
 module.exports = router;
