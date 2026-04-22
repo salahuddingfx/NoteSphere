@@ -74,10 +74,16 @@ export default function NotesPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-20">
       <section className="mx-auto w-full max-w-6xl mt-12">
-        <header className="mb-12">
-           <p className="text-xs uppercase tracking-[0.4em] text-indigo-400 font-bold mb-4">Central Repository</p>
-           <h1 className="text-5xl font-bold text-white tracking-tight">The Verified Vault</h1>
-           <p className="mt-4 text-zinc-500 text-lg max-w-2xl">Access premium academic resources verified by top students and moderators.</p>
+        <header className="mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
+           <div>
+             <p className="text-xs uppercase tracking-[0.4em] text-indigo-400 font-bold mb-4">Central Repository</p>
+             <h1 className="text-5xl font-bold text-white tracking-tight">The Verified Vault</h1>
+             <p className="mt-4 text-zinc-500 text-lg max-w-2xl">Access premium academic resources verified by top students and moderators.</p>
+           </div>
+           <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
+              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Total Assets</p>
+              <p className="text-xl font-black text-white">{notes.length}</p>
+           </div>
         </header>
 
         {/* Search & Filters */}
@@ -145,8 +151,16 @@ export default function NotesPage() {
                 className="group relative rounded-[2.5rem] border border-white/5 bg-white/5 p-2 backdrop-blur-xl hover:border-white/10 transition-all overflow-hidden h-full"
               >
                 <div className={`aspect-[4/3] rounded-[2rem] bg-gradient-to-br ${getNoteColor(idx)} p-8 flex flex-col justify-between relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                  {note.fileType === "image" && (
+                    <img 
+                      src={note.fileUrl} 
+                      className="absolute inset-0 h-full w-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700" 
+                      alt="Preview"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
                   <div className="relative z-10 flex justify-between items-start">
+
                       <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur text-[10px] font-black uppercase tracking-widest text-white">
                          <FileText className="w-3 h-3" />
                          {note.fileType}
