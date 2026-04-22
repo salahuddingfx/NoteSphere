@@ -13,6 +13,7 @@ interface Note {
   title: string;
   slug: string;
   description: string;
+  fileUrl: string;
   fileType: string;
   department: string;
   semester: string;
@@ -24,12 +25,14 @@ interface Note {
   isVerified: boolean;
   author: {
     name: string;
+    username: string;
     avatar: string;
     department: string;
     semester: string;
   };
   createdAt: string;
 }
+
 
 export default function NotesPage() {
   const [notes, setNotes] = useState<Note[]>([]);
