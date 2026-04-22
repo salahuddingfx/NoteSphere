@@ -336,9 +336,10 @@ export default function NoteDetailPage() {
                    {isSaved ? "Saved to Collection" : "Add to Favorites"}
                  </button>
                </div>
+             </div>
 
-            </div>
-          </aside>
+             <LearningPath note={note} />
+           </aside>
         </div>
       </section>
     </main>
