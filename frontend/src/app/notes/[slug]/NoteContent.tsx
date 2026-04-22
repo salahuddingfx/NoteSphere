@@ -13,6 +13,8 @@ import { useToast } from "@/components/ui/Toast";
 import CommentSection from "@/components/notes/CommentSection";
 import LearningPath from "@/components/notes/LearningPath";
 import QuizGenerator from "@/components/notes/QuizGenerator";
+import Link from "next/link";
+
 
 interface Note {
   _id: string;
