@@ -1,5 +1,7 @@
 const slugify = require("slugify");
 const Note = require("../models/Note");
+const Notification = require("../models/Notification");
+
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const { cloudinary, isCloudinaryConfigured } = require("../config/cloudinary");
