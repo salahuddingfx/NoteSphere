@@ -243,7 +243,11 @@ export default function NoteDetailPage() {
 
             {/* AI Summary Section */}
             <NoteSummary noteId={note._id} initialSummary={note.aiSummary} />
+
+            {/* Discussion System */}
+            <CommentSection noteId={note._id} />
           </div>
+
 
           {/* Sidebar */}
           <aside className="space-y-6">
