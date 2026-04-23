@@ -23,6 +23,13 @@ export default function NotePreview({ fileUrl, fileType, title }: NotePreviewPro
   const isImage = ["jpg", "jpeg", "png", "webp"].includes(fileType.toLowerCase());
   const isPDF = fileType.toLowerCase() === "pdf";
 
+  const optimizeUrl = (url: string) => {
+    if (url.includes("cloudinary.com") && url.includes("/upload/")) {
+      return url.replace("/upload/", "/upload/q_auto,f_auto/");
+    }
+    return url;
+  };
+
   return (
     <div className="group relative rounded-[2.5rem] border border-white/5 bg-white/5 overflow-hidden backdrop-blur-xl">
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent z-10 pointer-events-none" />
@@ -57,7 +64,7 @@ export default function NotePreview({ fileUrl, fileType, title }: NotePreviewPro
         {loading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-zinc-900/80 backdrop-blur-sm gap-4">
             <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Decrypting Asset...</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Syncing with Nexus...</p>
           </div>
         )}
 
@@ -70,8 +77,11 @@ export default function NotePreview({ fileUrl, fileType, title }: NotePreviewPro
              <button onClick={() => window.open(fileUrl, "_blank")} className="text-[10px] text-indigo-400 font-black uppercase tracking-widest hover:underline">Open in New Tab</button>
           </div>
         ) : isImage ? (
-          <img 
-            src={fileUrl} 
+          <motion.img 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: loading ? 0 : 1, scale: loading ? 0.95 : 1 }}
+            transition={{ duration: 0.5 }}
+            src={optimizeUrl(fileUrl)} 
             alt={title} 
             className="max-h-full max-w-full object-contain"
             onLoad={() => setLoading(false)}

@@ -73,14 +73,28 @@ export default function FullPreviewPage() {
             <ExternalLink className="w-4 h-4" />
             Open Original
           </button>
-          <a 
-            href={note.fileUrl}
-            download
+          <button 
+            onClick={async () => {
+              try {
+                const response = await fetch(note.fileUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", `${note.title}.${note.fileType}`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => window.URL.revokeObjectURL(url), 100);
+              } catch (err) {
+                console.error("Download failed:", err);
+              }
+            }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-xs font-black hover:scale-105 transition-all"
           >
             <Download className="w-4 h-4" />
             Download
-          </a>
+          </button>
         </div>
       </nav>
 

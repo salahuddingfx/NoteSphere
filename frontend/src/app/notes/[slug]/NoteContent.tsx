@@ -99,16 +99,26 @@ export default function NoteContent() {
     setDownloading(true);
     try {
       const { data } = await api.post(`/notes/${note?._id}/download`);
+      
+      // Fetch as blob to force browser download
+      const response = await fetch(data.fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
       const link = document.createElement("a");
-      link.href = data.fileUrl;
+      link.href = url;
       link.setAttribute("download", `${note?.title || 'note'}.${note?.fileType}`);
-      link.setAttribute("target", "_blank");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Cleanup
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+
       setNote(prev => prev ? { ...prev, downloads: data.downloads } : null);
       showToast("Syncing from Nexus Vault... Download started.", "success");
     } catch (err) {
+      console.error("Download failed:", err);
       showToast("Failed to retrieve file from vault.", "error");
     } finally {
       setDownloading(false);
