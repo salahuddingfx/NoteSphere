@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import AuthGate from "@/components/auth/AuthGate";
 import { useAuthStore } from "@/store/auth.store";
@@ -78,10 +79,13 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-8">
             <header className="flex flex-col gap-8 rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl md:flex-row md:items-center">
               <div className="relative h-32 w-32 shrink-0">
-                <img 
+                <Image 
                   src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
                   alt={user.name} 
+                  width={128}
+                  height={128}
                   className="h-full w-full rounded-[2.5rem] object-cover ring-4 ring-indigo-500/20"
+                  unoptimized
                 />
 
                 <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl">

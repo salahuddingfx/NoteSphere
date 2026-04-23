@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import MainNav from "@/components/ui/MainNav";
 import ImageCropper from "@/components/upload/ImageCropper";
 import CustomSelect from "@/components/ui/CustomSelect";
@@ -201,7 +202,13 @@ export default function UploadPage() {
                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover (Optional)</label>
                <div className="aspect-[3/4] rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
                   {croppedImage ? (
-                    <img src={croppedImage} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
+                    <Image 
+                      src={croppedImage} 
+                      alt="Preview" 
+                      fill
+                      className="absolute inset-0 w-full h-full object-cover" 
+                      unoptimized
+                    />
                   ) : (
                     <>
                       <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">

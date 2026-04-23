@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { getUserRank } from "@/lib/ranks";
 import Link from "next/link";
+import Image from "next/image";
 
 
 interface Leader {
@@ -88,10 +89,13 @@ export default function LeaderboardPage() {
                       <div className="relative">
                         <div className={`h-20 w-20 rounded-[1.8rem] bg-gradient-to-br ${color} p-[2px]`}>
                           <div className="h-full w-full rounded-[1.6rem] bg-black p-[2px]">
-                            <img 
+                            <Image 
                               src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
                               alt={user.name} 
+                              width={80}
+                              height={80}
                               className="h-full w-full rounded-[1.4rem] object-cover" 
+                              unoptimized
                             />
 
                           </div>
@@ -133,7 +137,7 @@ export default function LeaderboardPage() {
         </div>
 
         <div className="mt-12 rounded-3xl border border-dashed border-white/10 p-10 text-center">
-           <h4 className="text-zinc-400 font-bold italic">"Sharing is the ultimate form of learning."</h4>
+           <h4 className="text-zinc-400 font-bold italic">&quot;Sharing is the ultimate form of learning.&quot;</h4>
            <p className="text-xs text-zinc-600 mt-2 uppercase tracking-[0.2em]">Become a legend today.</p>
         </div>
       </section>

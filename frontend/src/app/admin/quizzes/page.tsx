@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
 import { Plus, Trash2, HelpCircle, CheckCircle2, Loader2, X } from "lucide-react";
@@ -27,7 +27,7 @@ export default function AdminQuizzesPage() {
     answer: ""
   });
 
-  const fetchQuizzes = async () => {
+  const fetchQuizzes = useCallback(async () => {
     try {
       const { data } = await api.get("/admin/quizzes");
       setQuizzes(data.quizzes);
@@ -36,11 +36,11 @@ export default function AdminQuizzesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     fetchQuizzes();
-  }, []);
+  }, [fetchQuizzes]);
 
   const handleAddQuiz = async (e: React.FormEvent) => {
     e.preventDefault();

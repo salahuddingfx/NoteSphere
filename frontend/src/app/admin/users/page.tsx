@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import { motion } from "framer-motion";
 import { Search, UserCog, Mail, Shield, User as UserIcon, Loader2, XCircle } from "lucide-react";
+import Image from "next/image";
 
 import { useToast } from "@/components/ui/Toast";
 import CustomSelect from "@/components/ui/CustomSelect";
@@ -27,7 +28,7 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const { showToast } = useToast();
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const { data } = await api.get("/admin/users");
       setUsers(data.users);
@@ -37,11 +38,11 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -109,7 +110,14 @@ export default function AdminUsersPage() {
             className="group flex flex-col md:flex-row md:items-center justify-between p-6 rounded-[2rem] border border-white/5 bg-white/5 hover:border-white/10 transition-all gap-6"
            >
              <div className="flex items-center gap-4">
-                <img src={user.avatar} alt={user.username} className="h-14 w-14 rounded-2xl border border-white/10 object-cover" />
+                 <Image 
+                   src={user.avatar} 
+                   alt={user.username} 
+                   width={56}
+                   height={56}
+                   className="h-14 w-14 rounded-2xl border border-white/10 object-cover" 
+                   unoptimized
+                 />
                 <div>
                    <h3 className="text-white font-bold text-lg flex items-center gap-2">
                      {user.name}

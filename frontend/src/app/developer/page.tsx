@@ -199,7 +199,7 @@ export default function DeveloperPage() {
                  </div>
                  
                  <p className="text-zinc-300 leading-relaxed italic text-2xl xl:text-3xl font-medium tracking-tight">
-                   "My goal is to bridge the gap between <span className="text-white font-bold underline decoration-indigo-500/50 underline-offset-8">complex academic resources</span> and student accessibility. NoteSphere is the physical manifestation of that vision—a vault built for the future."
+                   &quot;My goal is to bridge the gap between <span className="text-white font-bold underline decoration-indigo-500/50 underline-offset-8">complex academic resources</span> and student accessibility. NoteSphere is the physical manifestation of that vision—a vault built for the future.&quot;
                  </p>
                  
                  <div className="pt-4 flex items-center gap-4">

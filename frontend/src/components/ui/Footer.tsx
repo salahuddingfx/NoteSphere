@@ -40,7 +40,7 @@ export default function Footer() {
               NoteSphere<span className="text-indigo-500">.</span>
             </Link>
             <p className="text-sm leading-relaxed text-zinc-500">
-              The world's most advanced academic sharing ecosystem. Built for students, by students.
+              The world&apos;s most advanced academic sharing ecosystem. Built for students, by students.
             </p>
             <div className="flex gap-4">
                <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors cursor-pointer">X</div>

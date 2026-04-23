@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { Users, FileText, CheckCircle, TrendingUp, Award, Zap } from "lucide-react";
+import Image from "next/image";
 
 interface AdminStats {
   totalUsers: number;
@@ -134,10 +135,13 @@ export default function AdminPage() {
                   className="flex items-center justify-between p-3 rounded-2xl border border-white/5 bg-white/5 hover:border-white/10 transition-all cursor-default"
                 >
                    <div className="flex items-center gap-3">
-                      <img 
+                      <Image 
                         src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
                         alt={user.username} 
+                        width={40}
+                        height={40}
                         className="h-10 w-10 rounded-xl border border-white/10 object-cover" 
+                        unoptimized
                       />
                       <div>
 

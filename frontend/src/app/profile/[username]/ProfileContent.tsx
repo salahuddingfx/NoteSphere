@@ -21,6 +21,7 @@ import {
   Link as LinkIcon
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useToast } from "@/components/ui/Toast";
 
@@ -49,7 +50,7 @@ export default function ProfileContent() {
       }
     };
     if (username) fetchProfile();
-  }, [username]);
+  }, [username, router, showToast]);
 
   if (loading) return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
@@ -77,10 +78,13 @@ export default function ProfileContent() {
            <div className="space-y-8">
               <div className="rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl text-center flex flex-col items-center">
                  <div className="relative h-40 w-40 mb-8">
-                    <img 
+                    <Image 
                       src={profile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`} 
                       alt={profile.name} 
+                      width={160}
+                      height={160}
                       className="h-full w-full rounded-[3rem] object-cover ring-4 ring-indigo-500/20"
+                      unoptimized
                     />
                     <div className="absolute -bottom-2 -right-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-2xl">
                        <Zap className="h-6 w-6" />
@@ -96,7 +100,7 @@ export default function ProfileContent() {
                  </div>
 
                  <p className="text-sm text-zinc-400 leading-relaxed italic mb-8">
-                   "{profile.bio || "Academic contributor in the NoteSphere ecosystem."}"
+                   &quot;{profile.bio || "Academic contributor in the NoteSphere ecosystem."}&quot;
                  </p>
 
                  <div className="w-full space-y-4 pt-8 border-t border-white/5">
@@ -223,7 +227,7 @@ export default function ProfileContent() {
 
                     {notes.length === 0 && (
                       <div className="py-20 text-center rounded-[2.5rem] border border-dashed border-white/5">
-                         <p className="text-zinc-600 font-bold uppercase tracking-widest text-sm">No assets found in this identity's records.</p>
+                         <p className="text-zinc-600 font-bold uppercase tracking-widest text-sm">No assets found in this identity&apos;s records.</p>
                       </div>
                     )}
                  </div>

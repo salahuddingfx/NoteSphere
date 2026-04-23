@@ -110,7 +110,7 @@ export default function AboutPage() {
               <h2 className="text-4xl font-bold text-white">Trust by Verification</h2>
               <p className="mt-6 max-w-2xl mx-auto text-zinc-400 text-lg">
                 Every note undergoes a peer-review and moderator verification process. 
-                Only the most accurate and well-organized content makes it to the "Verified" vault.
+                Only the most accurate and well-organized content makes it to the &quot;Verified&quot; vault.
               </p>
               <button className="mt-10 px-8 py-4 bg-white text-black font-bold rounded-2xl hover:scale-105 transition-transform active:scale-95">
                 Join the Council
