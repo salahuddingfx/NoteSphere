@@ -42,10 +42,10 @@ export default function Footer() {
             <p className="text-sm leading-relaxed text-zinc-500">
               The world&apos;s most advanced academic sharing ecosystem. Built for students, by students.
             </p>
-            <div className="flex gap-4">
-               <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors cursor-pointer">X</div>
-               <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors cursor-pointer">G</div>
-               <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors cursor-pointer">L</div>
+            <div className="flex flex-wrap gap-3">
+               <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer">X</div>
+               <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer">G</div>
+               <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer">L</div>
             </div>
           </div>
 
