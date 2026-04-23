@@ -2,39 +2,86 @@
 
 import MainNav from "@/components/ui/MainNav";
 import { motion } from "framer-motion";
+import { Users, MessagesSquare, Sparkles, BookOpen, ChevronRight, Search } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
+const SUBJECTS = [
+  { name: "Computer Science", count: 42, icon: "💻", color: "bg-blue-500" },
+  { name: "Electrical Engineering", count: 28, icon: "⚡", color: "bg-yellow-500" },
+  { name: "Mathematics", count: 35, icon: "📐", color: "bg-indigo-500" },
+  { name: "Physics", count: 19, icon: "⚛️", color: "bg-cyan-500" },
+  { name: "Chemistry", count: 12, icon: "🧪", color: "bg-emerald-500" },
+  { name: "Civil Engineering", count: 15, icon: "🏗️", color: "bg-orange-500" },
+];
 
 export default function CommunityPage() {
+  const [search, setSearch] = useState("");
+
+  const filteredSubjects = SUBJECTS.filter(s => 
+    s.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <main className="min-h-screen bg-black px-4 py-12 sm:px-6 lg:px-10">
       <MainNav />
-      <section className="mx-auto max-w-6xl mt-20 relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-96 w-96 bg-indigo-500/10 blur-[120px] -z-10" />
-        
-        <div className="text-center mb-20">
-          <h1 className="text-6xl font-black text-white tracking-tighter mb-4">NoteSphere Community</h1>
-          <p className="text-zinc-500 text-lg">Join thousands of students building the future of academia.</p>
+      <section className="mx-auto w-full max-w-5xl mt-12">
+        <header className="mb-16">
+          <div className="flex items-center gap-3 mb-4">
+             <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                <MessagesSquare className="w-6 h-6" />
+             </div>
+             <p className="text-xs font-black uppercase tracking-[0.4em] text-indigo-400">Nexus Community</p>
+          </div>
+          <h1 className="text-6xl font-black text-white tracking-tighter mb-6">Subject Forums</h1>
+          <p className="text-zinc-500 text-lg max-w-2xl leading-relaxed">
+            Collaborate with peers, ask complex questions, and master your curriculum through community intelligence.
+          </p>
+        </header>
+
+        {/* Search Bar */}
+        <div className="relative mb-12 group">
+           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600 group-focus-within:text-indigo-400 transition-colors" />
+           <input 
+            type="text" 
+            placeholder="Search academic departments or subjects..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-6 pl-16 pr-8 text-white focus:border-indigo-500/50 outline-none transition-all backdrop-blur-xl"
+           />
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-           {[
-             { title: "Discord Hub", desc: "Join our official server for real-time discussion.", icon: "D" },
-             { title: "GitHub Org", desc: "Contribute to the open-source core of NoteSphere.", icon: "G" },
-             { title: "Study Circles", desc: "Form private groups with your classmates.", icon: "S" },
-           ].map((card, i) => (
-             <motion.div 
-               key={i}
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: i * 0.1 }}
-               className="rounded-[2.5rem] border border-white/5 bg-white/5 p-10 backdrop-blur-xl hover:border-indigo-500/30 transition-all group"
-             >
-               <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-black text-xl mb-6 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                  {card.icon}
-               </div>
-               <h3 className="text-2xl font-bold text-white mb-2">{card.title}</h3>
-               <p className="text-zinc-500 leading-relaxed">{card.desc}</p>
-             </motion.div>
-           ))}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredSubjects.map((subject, idx) => (
+            <Link key={subject.name} href={`/community/${encodeURIComponent(subject.name)}`}>
+               <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="group p-8 rounded-[2.5rem] border border-white/5 bg-white/5 hover:border-indigo-500/30 hover:bg-white/[0.08] transition-all relative overflow-hidden"
+               >
+                  <div className={`absolute top-0 right-0 w-32 h-32 ${subject.color} opacity-[0.03] blur-3xl`} />
+                  
+                  <div className="text-4xl mb-6">{subject.icon}</div>
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">{subject.name}</h3>
+                  <div className="flex items-center justify-between mt-8">
+                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{subject.count} Active Discussions</span>
+                     <ChevronRight className="w-4 h-4 text-zinc-700 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+                  </div>
+               </motion.div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-20 rounded-[3rem] border border-white/5 bg-gradient-to-br from-indigo-500/5 to-transparent p-12 text-center">
+           <Sparkles className="w-12 h-12 text-indigo-400 mx-auto mb-6" />
+           <h2 className="text-2xl font-black text-white mb-4 italic tracking-tight">Don&apos;t see your subject?</h2>
+           <p className="text-zinc-500 max-w-lg mx-auto text-sm leading-relaxed mb-8">
+             Upload a note for a new subject to automatically manifest a new discussion forum in the Nexus.
+           </p>
+           <Link href="/upload" className="px-8 py-4 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-xl">
+             Begin Contribution
+           </Link>
         </div>
       </section>
     </main>

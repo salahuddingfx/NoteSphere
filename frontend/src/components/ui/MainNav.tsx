@@ -9,6 +9,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/store/auth.store";
 import { getUserRank } from "@/lib/ranks";
 import NotificationBell from "../layout/NotificationBell";
+import { useTheme } from "@/context/ThemeContext";
+import { Palette, Moon, Sun, Monitor, Sparkles } from "lucide-react";
 
 
 const navItems = [
@@ -21,7 +23,9 @@ const navItems = [
 export default function MainNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [showThemes, setShowThemes] = useState(false);
   const { user, isAuthenticated } = useAuthStore();
+  const { theme, setTheme } = useTheme();
 
   return (
     <header className="fixed top-8 left-0 right-0 z-50 px-4 pointer-events-none">
@@ -50,7 +54,7 @@ export default function MainNav() {
               </Link>
             );
           })}
-          {(user?.role === "admin" || user?.role === "moderator") && (
+           {(user?.role === "admin" || user?.role === "moderator") && (
             <Link
               href="/admin"
               className={`rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
@@ -62,6 +66,41 @@ export default function MainNav() {
               Admin
             </Link>
           )}
+
+          <div className="relative ml-2">
+            <button 
+              onClick={() => setShowThemes(!showThemes)}
+              className="p-2 rounded-xl text-zinc-500 hover:text-white hover:bg-white/5 transition-all"
+              title="Change Theme"
+            >
+              <Palette className="w-4 h-4" />
+            </button>
+            <AnimatePresence>
+              {showThemes && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute top-full mt-2 left-0 w-48 rounded-2xl bg-zinc-900 border border-white/10 p-2 shadow-2xl z-50"
+                >
+                  {[
+                    { id: 'nexus-dark', label: 'Nexus Dark', icon: Moon, color: 'text-indigo-400' },
+                    { id: 'deep-space', label: 'Deep Space', icon: Monitor, color: 'text-cyan-400' },
+                    { id: 'academic-gold', label: 'Academic Gold', icon: Sparkles, color: 'text-amber-400' },
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => { setTheme(t.id as any); setShowThemes(false); }}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-[10px] font-black uppercase tracking-widest transition-all ${theme === t.id ? 'text-white bg-white/5' : 'text-zinc-500'}`}
+                    >
+                      <t.icon className={`w-3.5 h-3.5 ${t.color}`} />
+                      {t.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
 

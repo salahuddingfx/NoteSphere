@@ -10,12 +10,25 @@
   --ns-cyan: #22d3ee;
 }
 
+.deep-space {
+  --ns-bg: #0a0e1a;
+  --ns-surface: #12192b;
+  --ns-cyan: #0ea5e9;
+}
+
+.academic-gold {
+  --ns-bg: #0f0b06;
+  --ns-surface: #1a140b;
+  --ns-cyan: #f59e0b;
+}
+
 body {
   color: var(--ns-text);
   background-color: var(--ns-bg);
   background-image: radial-gradient(circle at 8% -2%, rgba(34, 211, 238, 0.08), transparent 30%),
     radial-gradient(circle at 88% 0%, rgba(251, 191, 36, 0.07), transparent 28%);
   min-height: 100vh;
+  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), color 0.8s ease;
 }
 
 @layer base {

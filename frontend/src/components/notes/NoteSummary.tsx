@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
-import { Sparkles, Loader2, BookOpen, Zap } from "lucide-react";
+import { Sparkles, Loader2, BookOpen, Zap, Volume2, VolumeX } from "lucide-react";
 
 interface NoteSummaryProps {
   noteId: string;
@@ -13,6 +13,24 @@ interface NoteSummaryProps {
 export default function NoteSummary({ noteId, initialSummary }: NoteSummaryProps) {
   const [summary, setSummary] = useState(initialSummary);
   const [loading, setLoading] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleSpeak = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    if (!summary) return;
+
+    const utterance = new SpeechSynthesisUtterance(summary);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const generateSummary = async () => {
     setLoading(true);
@@ -45,20 +63,32 @@ export default function NoteSummary({ noteId, initialSummary }: NoteSummaryProps
             <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Powered by NoteSphere AI</p>
           </div>
         </div>
-        {!summary && !loading && (
-          <button
-            onClick={generateSummary}
-            className="px-6 py-2 rounded-xl bg-indigo-500 text-white text-xs font-bold hover:bg-indigo-600 transition-all flex items-center gap-2 group"
-          >
-            <motion.div
-              whileHover={{ rotate: 180 }}
-              transition={{ type: "spring", stiffness: 200 }}
-            >
-              <Zap className="w-4 h-4 fill-current" />
-            </motion.div>
-            Generate Summary
-          </button>
-        )}
+
+        <div className="flex gap-2">
+           {summary && (
+              <button 
+                onClick={handleSpeak}
+                className={`p-3 rounded-xl border transition-all ${isSpeaking ? 'bg-indigo-500 border-indigo-400 text-white animate-pulse' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'}`}
+                title={isSpeaking ? "Stop Reading" : "Read Aloud"}
+              >
+                {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </button>
+           )}
+           {!summary && !loading && (
+             <button
+               onClick={generateSummary}
+               className="px-6 py-3 rounded-xl bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all flex items-center gap-2 group"
+             >
+               <motion.div
+                 whileHover={{ rotate: 180 }}
+                 transition={{ type: "spring", stiffness: 200 }}
+               >
+                 <Zap className="w-4 h-4 fill-current" />
+               </motion.div>
+               Generate Summary
+             </button>
+           )}
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -106,4 +136,3 @@ export default function NoteSummary({ noteId, initialSummary }: NoteSummaryProps
     </div>
   );
 }
-

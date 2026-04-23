@@ -52,6 +52,11 @@ const userSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    monthlyXp: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     level: {
       type: Number,
       default: 1,

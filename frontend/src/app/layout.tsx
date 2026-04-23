@@ -72,6 +72,7 @@ import NexusAI from "@/components/ai/NexusAI";
 import MainNav from "@/components/ui/MainNav";
 import NextTopLoader from "nextjs-toploader";
 import CommandPalette from "@/components/ui/CommandPalette";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 
 
@@ -96,21 +97,23 @@ export default function RootLayout({
           speed={200}
           shadow="0 0 10px #22d3ee,0 0 5px #22d3ee"
         />
-        <ToastProvider>
-          <AuthInitializer />
-          <CommandPalette>
-            <IntroLoader />
-            <CustomCursor />
-            <MainNav />
-            <div className="pt-32">
-              {children}
-            </div>
-            <NexusAI />
-            <ScrollToTop />
-            <Footer />
-          </CommandPalette>
-          <PWAInstallPrompt />
-        </ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <AuthInitializer />
+            <CommandPalette>
+              <IntroLoader />
+              <CustomCursor />
+              <MainNav />
+              <div className="pt-32">
+                {children}
+              </div>
+              <NexusAI />
+              <ScrollToTop />
+              <Footer />
+            </CommandPalette>
+            <PWAInstallPrompt />
+          </ToastProvider>
+        </ThemeProvider>
       </body>
 
     </html>

@@ -7,6 +7,7 @@ const aiRoutes = require("./ai.routes");
 const collectionRoutes = require("./collection.routes");
 const commentRoutes = require("./comment.routes");
 const notificationRoutes = require("./notification.routes");
+const discussionRoutes = require("./discussion.routes");
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.use("/ai", aiRoutes);
 router.use("/collections", collectionRoutes);
 router.use("/comments", commentRoutes);
 router.use("/notifications", notificationRoutes);
+router.use("/discussions", discussionRoutes);
 
 
 

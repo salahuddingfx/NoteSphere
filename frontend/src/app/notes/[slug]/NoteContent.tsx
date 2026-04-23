@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import MainNav from "@/components/ui/MainNav";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
-import { FileText, Download, User, Calendar, Tag, ShieldCheck, ArrowLeft, Eye, Bookmark, BookmarkCheck, Loader2, Heart, Share2, Link as LinkIcon } from "lucide-react";
+import { FileText, Download, User, Calendar, Tag, ShieldCheck, ArrowLeft, Eye, Bookmark, BookmarkCheck, Loader2, Heart, Share2, Link as LinkIcon, Trash2, FolderPlus, Plus, MessagesSquare, Clock } from "lucide-react";
 import NoteSummary from "@/components/notes/NoteSummary";
 import NotePreview from "@/components/notes/NotePreview";
 import { useToast } from "@/components/ui/Toast";
@@ -36,6 +36,7 @@ interface Note {
   isVerified: boolean;
   aiSummary?: string;
   author: {
+    _id: string;
     name: string;
     username: string;
     avatar: string;
@@ -53,8 +54,16 @@ export default function NoteContent() {
   const [downloading, setDownloading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [collections, setCollections] = useState<any[]>([]);
+  const [showCollections, setShowCollections] = useState(false);
   const { isAuthenticated, user } = useAuthStore();
   const { showToast } = useToast();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      api.get("/collections").then(res => setCollections(res.data.collections));
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -158,6 +167,28 @@ export default function NoteContent() {
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     showToast("Link copied to clipboard!", "success");
+  };
+
+  const handleAddToCollection = async (collectionId: string) => {
+    try {
+      await api.post("/collections/add", { collectionId, noteId: note?._id });
+      showToast("Added to your academic playlist.", "success");
+      setShowCollections(false);
+    } catch (err: any) {
+      showToast(err.response?.data?.message || "Failed to add to playlist.", "error");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to permanently erase this asset from the Nexus? This action cannot be undone.")) return;
+    
+    try {
+      await api.delete(`/notes/${note?._id}`);
+      showToast("Asset successfully purged from Nexus Vault.", "success");
+      router.push("/dashboard");
+    } catch (err) {
+      showToast("Failed to initiate purge sequence.", "error");
+    }
   };
 
   if (loading) return (
@@ -316,6 +347,55 @@ export default function NoteContent() {
                    {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
                    {isSaved ? "Saved to Collection" : "Add to Favorites"}
                  </button>
+
+                 <div className="relative">
+                   <button 
+                    onClick={() => setShowCollections(!showCollections)}
+                    className="w-full py-4 rounded-2xl border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                   >
+                     <FolderPlus className="w-4 h-4" />
+                     Add to Playlist
+                   </button>
+
+                   <AnimatePresence>
+                     {showCollections && (
+                       <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute bottom-full left-0 right-0 mb-2 p-2 rounded-2xl bg-zinc-900 border border-white/10 shadow-2xl z-50 max-h-48 overflow-y-auto"
+                       >
+                         {collections.length > 0 ? (
+                           collections.map(col => (
+                             <button
+                               key={col._id}
+                               onClick={() => handleAddToCollection(col._id)}
+                               className="w-full p-3 rounded-xl hover:bg-white/5 text-left text-xs font-bold text-zinc-300 hover:text-white transition-all flex items-center gap-2"
+                             >
+                                <div className={`h-2 w-2 rounded-full bg-${col.color || 'indigo'}-500`} />
+                                {col.name}
+                             </button>
+                           ))
+                         ) : (
+                           <div className="p-4 text-center">
+                              <p className="text-[10px] text-zinc-500 font-bold uppercase mb-2">No Playlists Found</p>
+                              <Link href="/dashboard" className="text-[10px] text-indigo-400 font-black uppercase hover:underline">Create One →</Link>
+                           </div>
+                         )}
+                       </motion.div>
+                     )}
+                   </AnimatePresence>
+                 </div>
+
+                 {(user?._id === note.author._id || user?.role === 'admin' || user?.role === 'moderator') && (
+                   <button 
+                    onClick={handleDelete}
+                    className="w-full py-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2"
+                   >
+                     <Trash2 className="w-4 h-4" />
+                     Erase from Nexus
+                   </button>
+                 )}
                </div>
             </div>
             <LearningPath note={note} />

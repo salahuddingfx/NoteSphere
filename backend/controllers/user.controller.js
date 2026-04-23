@@ -4,14 +4,18 @@ const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 
 const getLeaderboard = asyncHandler(async (req, res) => {
+  const { monthly } = req.query;
+  const sortField = monthly === "true" ? "monthlyXp" : "xp";
+
   const users = await User.find()
-    .sort({ xp: -1 })
+    .sort({ [sortField]: -1 })
     .limit(10)
-    .select("name username avatar xp level badges");
+    .select("name username avatar xp monthlyXp level badges");
 
   res.status(200).json({
     success: true,
     users,
+    type: monthly === "true" ? "monthly" : "all-time"
   });
 });
 

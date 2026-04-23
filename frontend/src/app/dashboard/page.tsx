@@ -8,7 +8,7 @@ import AuthGate from "@/components/auth/AuthGate";
 import { useAuthStore } from "@/store/auth.store";
 import { getUserRank } from "@/lib/ranks";
 import { api } from "@/lib/api";
-import { Building2, Zap, TrendingUp, Diamond, Award, BookOpen, ChevronRight, Loader2, Bookmark, FolderOpen, History, Plus, Star, ShieldCheck } from "lucide-react";
+import { Building2, Zap, TrendingUp, Diamond, Award, BookOpen, ChevronRight, Loader2, Bookmark, FolderOpen, History, Plus, Star, ShieldCheck, Trash2 } from "lucide-react";
 import dynamic from "next/dynamic";
 
 import ContributionChart from "@/components/dashboard/ContributionChart";
@@ -62,6 +62,24 @@ export default function DashboardPage() {
     const saved = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
     setRecentlyViewed(saved);
   }, []);
+
+  const handleDeleteNote = async (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!window.confirm("Permanently erase this contribution?")) return;
+
+    try {
+      await api.delete(`/notes/${id}`);
+      setMyNotes(prev => prev.filter(n => n._id !== id));
+      // Also clean up recently viewed if it's there
+      const updatedRecently = recentlyViewed.filter(n => n._id !== id);
+      setRecentlyViewed(updatedRecently);
+      localStorage.setItem("recentlyViewed", JSON.stringify(updatedRecently));
+    } catch (err) {
+      console.error("Failed to delete note", err);
+    }
+  };
 
   if (!user) return null;
 
@@ -265,6 +283,12 @@ export default function DashboardPage() {
                               <span className="text-[8px] font-black uppercase tracking-widest text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-lg border border-yellow-400/20">Pending</span>
                             )}
                             <span className="text-[10px] text-zinc-600 font-bold">{new Date(note.createdAt).toLocaleDateString()}</span>
+                            <button 
+                               onClick={(e) => handleDeleteNote(note._id, e)}
+                               className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all ml-2"
+                             >
+                                <Trash2 className="w-4 h-4" />
+                             </button>
                          </div>
                        </Link>
                      ))
