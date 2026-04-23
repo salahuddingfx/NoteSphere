@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { NoteSkeleton } from "@/components/ui/Skeleton";
 import CustomSelect from "@/components/ui/CustomSelect";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, Zap, FileText, ShieldCheck, User, ChevronRight, Eye, Download } from "lucide-react";
 
 interface Note {
@@ -43,7 +44,7 @@ export default function NotesPage() {
   const [category, setCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest");
 
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -52,7 +53,7 @@ export default function NotesPage() {
       if (semester !== "All") params.append("semester", semester);
       if (category !== "All") params.append("category", category);
       params.append("sort", sortBy);
-
+  
       const { data } = await api.get(`/notes?${params.toString()}`);
       setNotes(data.notes);
     } catch (err) {
@@ -60,14 +61,14 @@ export default function NotesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, department, semester, category, sortBy]);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
       fetchNotes();
     }, 500);
     return () => clearTimeout(debounce);
-  }, [search, department, semester, category, sortBy]);
+  }, [fetchNotes]);
 
   const getNoteColor = (idx: number) => {
     const colors = ["from-indigo-600 to-indigo-900", "from-cyan-600 to-cyan-900", "from-emerald-600 to-emerald-900", "from-amber-600 to-amber-900"];
@@ -155,10 +156,12 @@ export default function NotesPage() {
               >
                 <div className={`aspect-[4/3] rounded-[2rem] bg-gradient-to-br ${getNoteColor(idx)} p-8 flex flex-col justify-between relative overflow-hidden`}>
                   {note.fileType === "image" && (
-                    <img 
+                    <Image 
                       src={note.fileUrl} 
+                      fill
                       className="absolute inset-0 h-full w-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700" 
                       alt="Preview"
+                      unoptimized
                     />
                   )}
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
@@ -193,10 +196,13 @@ export default function NotesPage() {
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <img 
+                      <Image 
                         src={note.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${note.author.username}`} 
                         alt={note.author.name} 
+                        width={32}
+                        height={32}
                         className="h-8 w-8 rounded-full border border-white/10 object-cover" 
+                        unoptimized
                       />
                       <div className="space-y-1">
 
