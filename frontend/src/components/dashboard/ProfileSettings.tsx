@@ -10,6 +10,7 @@ import { Sparkles, ShieldCheck, FileText, Camera, Users, Award, Phone, Hash } fr
 
 import { useToast } from "@/components/ui/Toast";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const DynamicThreeBadge = dynamic(() => import("@/components/ui/ThreeBadge"), { ssr: false });
 
@@ -84,10 +85,13 @@ export default function ProfileSettings() {
              
              <div className="relative z-10 flex flex-col items-center">
                 <div className="relative group/avatar">
-                   <img 
+                   <Image 
                      src={formData.avatar} 
+                     width={128}
+                     height={128}
                      className="h-32 w-32 rounded-[2rem] border-2 border-indigo-500/30 object-cover shadow-2xl transition-transform group-hover/avatar:scale-[1.02]" 
                      alt="Preview" 
+                     unoptimized
                    />
                    <div className="absolute -top-6 -right-6 h-16 w-16">
                       <DynamicThreeBadge rank={getUserRank(user?.level || 1).name} />
