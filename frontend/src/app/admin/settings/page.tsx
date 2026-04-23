@@ -110,7 +110,7 @@ export default function AdminSettingsPage() {
            
            <div className="grid gap-8 md:grid-cols-2">
               <div className="space-y-3">
-                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Platform Name</label>
+                 <label className="text-xs font-black uppercase tracking-widest text-zinc-500">Platform Name</label>
                  <input 
                   type="text" 
                   value={settings.platformName}
@@ -119,7 +119,7 @@ export default function AdminSettingsPage() {
                  />
               </div>
               <div className="space-y-3">
-                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Support Email</label>
+                 <label className="text-xs font-black uppercase tracking-widest text-zinc-500">Support Email</label>
                  <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
                     <input 
@@ -159,7 +159,7 @@ export default function AdminSettingsPage() {
 
               <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Active Model (OpenRouter)</label>
+                     <label className="text-xs font-black uppercase tracking-widest text-zinc-500">Active Model (OpenRouter)</label>
                      <button 
                       onClick={fetchModels}
                       disabled={syncing}
