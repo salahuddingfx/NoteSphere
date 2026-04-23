@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import MainNav from "@/components/ui/MainNav";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
@@ -250,10 +251,13 @@ export default function NoteContent() {
             <div className="rounded-[2rem] border border-white/5 bg-white/5 p-8 backdrop-blur-xl sticky top-32">
                <div className="flex items-center gap-4 mb-8">
                  <Link href={`/profile/${note.author.username}`}>
-                   <img 
+                   <Image 
                      src={note.author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${note.author.username}`} 
                      alt={note.author.name} 
+                     width={56}
+                     height={56}
                      className="h-14 w-14 rounded-2xl border border-white/10 object-cover hover:scale-105 transition-transform" 
+                     unoptimized
                    />
                  </Link>
                  <div>
