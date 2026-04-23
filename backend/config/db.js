@@ -3,7 +3,11 @@ const dns = require("dns");
 const env = require("./env");
 
 // Set DNS servers to avoid querySrv ECONNREFUSED on some networks
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+} catch (e) {
+  console.warn("Could not set DNS servers, using default.");
+}
 
 const connectDB = async () => {
   try {

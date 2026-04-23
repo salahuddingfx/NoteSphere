@@ -7,7 +7,14 @@ const rateLimit = require("express-rate-limit");
 const env = require("./config/env");
 const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
+const connectDB = require("./config/db");
 const app = express();
+
+// Connect to Database
+connectDB();
+
+// Trust Vercel proxy for rate limiting
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(
