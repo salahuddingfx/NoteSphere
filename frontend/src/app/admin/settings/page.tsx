@@ -43,8 +43,10 @@ export default function AdminSettingsPage() {
     try {
       const { data } = await api.get("/admin/ai-models");
       setModels(data.models);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch AI models", err);
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || "Failed to sync with OpenRouter";
+      showToast(errorMessage, "error");
     } finally {
       setSyncing(false);
     }

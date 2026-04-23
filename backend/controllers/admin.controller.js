@@ -9,23 +9,41 @@ const getAvailableModels = asyncHandler(async (req, res) => {
   try {
     const response = await axios.get("https://openrouter.ai/api/v1/models", {
       headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": process.env.CLIENT_URL || "http://localhost:3000",
+        "X-Title": "NoteSphere"
       }
     });
 
+    if (!response.data || !Array.isArray(response.data.data)) {
+      throw new Error("Invalid response format from OpenRouter");
+    }
+
     // Filter for free models
     const freeModels = response.data.data
-      .filter(model => model.pricing.prompt === "0" && model.pricing.completion === "0")
+      .filter(model => {
+        // Some models might not have pricing info, or pricing might be represented differently
+        if (!model.pricing) return false;
+        
+        const isFreePrompt = String(model.pricing.prompt) === "0" || parseFloat(model.pricing.prompt) === 0;
+        const isFreeCompletion = String(model.pricing.completion) === "0" || parseFloat(model.pricing.completion) === 0;
+        
+        return isFreePrompt && isFreeCompletion;
+      })
       .map(model => ({
         id: model.id,
         name: model.name,
-        description: model.description
+        description: model.description || "No description available"
       }));
 
     res.status(200).json({ success: true, models: freeModels });
   } catch (err) {
-    console.error("OpenRouter Fetch Error:", err);
-    res.status(500).json({ success: false, message: "Failed to sync with OpenRouter" });
+    console.error("OpenRouter Fetch Error:", err.response?.data || err.message);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to sync with OpenRouter",
+      error: err.response?.data?.error?.message || err.message
+    });
   }
 });
 
