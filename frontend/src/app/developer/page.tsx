@@ -14,9 +14,9 @@ const skills = [
 
 const socials = [
   { name: "GitHub", url: "https://github.com/salahuddingfx", icon: Github },
-  { name: "LinkedIn", url: "#", icon: Linkedin },
-  { name: "Facebook", url: "#", icon: Facebook },
-  { name: "Twitter", url: "#", icon: Twitter },
+  { name: "LinkedIn", url: "https://linkedin.com/in/salahuddingfx", icon: Linkedin },
+  { name: "Facebook", url: "https://facebook.com/salahuddingfx", icon: Facebook },
+  { name: "Twitter", url: "https://x.com/salahuddingfx", icon: Twitter },
 ];
 
 export default function DeveloperPage() {
