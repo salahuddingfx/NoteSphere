@@ -2,17 +2,31 @@
 
 import MainNav from "@/components/ui/MainNav";
 import { motion } from "framer-motion";
-import { Users, MessagesSquare, Sparkles, BookOpen, ChevronRight, Search } from "lucide-react";
+import { 
+  Users, 
+  MessagesSquare, 
+  Sparkles, 
+  BookOpen, 
+  ChevronRight, 
+  Search,
+  Monitor,
+  Zap,
+  Calculator,
+  Atom,
+  FlaskConical,
+  Construction,
+  Cpu
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 const SUBJECTS = [
-  { name: "Computer Science", count: 42, icon: "💻", color: "bg-blue-500" },
-  { name: "Electrical Engineering", count: 28, icon: "⚡", color: "bg-yellow-500" },
-  { name: "Mathematics", count: 35, icon: "📐", color: "bg-indigo-500" },
-  { name: "Physics", count: 19, icon: "⚛️", color: "bg-cyan-500" },
-  { name: "Chemistry", count: 12, icon: "🧪", color: "bg-emerald-500" },
-  { name: "Civil Engineering", count: 15, icon: "🏗️", color: "bg-orange-500" },
+  { name: "Computer Science", count: 42, icon: Cpu, color: "text-blue-400", bg: "bg-blue-500" },
+  { name: "Electrical Engineering", count: 28, icon: Zap, color: "text-yellow-400", bg: "bg-yellow-500" },
+  { name: "Mathematics", count: 35, icon: Calculator, color: "text-indigo-400", bg: "bg-indigo-500" },
+  { name: "Physics", count: 19, icon: Atom, color: "text-cyan-400", bg: "bg-cyan-500" },
+  { name: "Chemistry", count: 12, icon: FlaskConical, color: "text-emerald-400", bg: "bg-emerald-500" },
+  { name: "Civil Engineering", count: 15, icon: Construction, color: "text-orange-400", bg: "bg-orange-500" },
 ];
 
 export default function CommunityPage() {
@@ -60,9 +74,12 @@ export default function CommunityPage() {
                 transition={{ delay: idx * 0.05 }}
                 className="group p-8 rounded-[2.5rem] border border-white/5 bg-white/5 hover:border-indigo-500/30 hover:bg-white/[0.08] transition-all relative overflow-hidden"
                >
-                  <div className={`absolute top-0 right-0 w-32 h-32 ${subject.color} opacity-[0.03] blur-3xl`} />
+                  <div className={`absolute top-0 right-0 w-32 h-32 ${subject.bg} opacity-[0.03] blur-3xl`} />
                   
-                  <div className="text-4xl mb-6">{subject.icon}</div>
+                  <div className={`h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center mb-8 border border-white/5 group-hover:border-white/10 transition-all ${subject.color}`}>
+                     <subject.icon className="w-8 h-8" />
+                  </div>
+                  
                   <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">{subject.name}</h3>
                   <div className="flex items-center justify-between mt-8">
                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{subject.count} Active Discussions</span>
