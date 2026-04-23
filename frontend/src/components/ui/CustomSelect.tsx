@@ -35,7 +35,7 @@ export default function CustomSelect({ options, value, onChange, placeholder = "
 
   return (
     <div className="relative" ref={containerRef}>
-      {label && <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">{label}</label>}
+      {label && <label className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-2 block">{label}</label>}
       
       <button
         type="button"
