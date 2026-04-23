@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 import { Maximize2, ExternalLink, FileText, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -77,19 +78,20 @@ export default function NotePreview({ fileUrl, fileType, title }: NotePreviewPro
              <button onClick={() => window.open(fileUrl, "_blank")} className="text-[10px] text-indigo-400 font-black uppercase tracking-widest hover:underline">Open in New Tab</button>
           </div>
         ) : isImage ? (
-          <motion.img 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: loading ? 0 : 1, scale: loading ? 0.95 : 1 }}
-            transition={{ duration: 0.5 }}
-            src={optimizeUrl(fileUrl)} 
-            alt={title} 
-            className="max-h-full max-w-full object-contain"
-            onLoad={() => setLoading(false)}
-            onError={() => {
-              setLoading(false);
-              setHasError(true);
-            }}
-          />
+          <div className="relative w-full h-full">
+            <Image 
+              src={optimizeUrl(fileUrl)} 
+              alt={title} 
+              fill
+              className="object-contain"
+              onLoad={() => setLoading(false)}
+              onError={() => {
+                setLoading(false);
+                setHasError(true);
+              }}
+              unoptimized
+            />
+          </div>
         ) : isPDF ? (
           <iframe
             src={`https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`}
