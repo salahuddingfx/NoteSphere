@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, Send, Heart, Trash2, Reply, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
 import { useToast } from "@/components/ui/Toast";
 import Link from "next/link";
+import Image from "next/image";
 
 
 interface Comment {
@@ -34,7 +35,7 @@ export default function CommentSection({ noteId }: { noteId: string }) {
   const { user, isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const { data } = await api.get(`/comments/note/${noteId}`);
       setComments(data.comments);
@@ -44,11 +45,11 @@ export default function CommentSection({ noteId }: { noteId: string }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [noteId]);
 
   useEffect(() => {
     if (noteId) fetchComments();
-  }, [noteId]);
+  }, [noteId, fetchComments]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,7 +214,14 @@ function CommentItem({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <Link href={`/profile/${comment.author.username}`}>
-              <img src={comment.author.avatar} alt={comment.author.name} className="h-10 w-10 rounded-xl border border-white/10 hover:scale-105 transition-transform" />
+              <Image 
+                src={comment.author.avatar} 
+                alt={comment.author.name} 
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-xl border border-white/10 hover:scale-105 transition-transform" 
+                unoptimized
+              />
             </Link>
             <div>
               <Link href={`/profile/${comment.author.username}`} className="text-sm font-bold text-white hover:text-indigo-400 transition-colors">
