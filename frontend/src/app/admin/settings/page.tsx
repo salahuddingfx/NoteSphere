@@ -102,7 +102,7 @@ export default function AdminSettingsPage() {
 
       <div className="grid gap-8">
         {/* General Settings */}
-        <section className="rounded-[2.5rem] border border-white/5 bg-white/5 p-10 backdrop-blur-xl">
+        <section className="relative z-30 rounded-[2.5rem] border border-white/5 bg-white/5 p-10 backdrop-blur-xl">
            <h2 className="text-lg font-bold text-white mb-8 flex items-center gap-3">
              <Globe className="w-5 h-5 text-blue-400" />
              General Settings
@@ -134,7 +134,7 @@ export default function AdminSettingsPage() {
         </section>
 
         {/* AI Engine Settings */}
-        <section className="rounded-[2.5rem] border border-white/5 bg-white/5 p-10 backdrop-blur-xl">
+        <section className="relative z-20 rounded-[2.5rem] border border-white/5 bg-white/5 p-10 backdrop-blur-xl">
            <h2 className="text-lg font-bold text-white mb-8 flex items-center gap-3">
              <Zap className="w-5 h-5 text-yellow-400" />
              AI Engine Configuration
@@ -188,7 +188,7 @@ export default function AdminSettingsPage() {
 
 
         {/* Security & Access */}
-        <section className="rounded-[2.5rem] border border-white/5 bg-white/5 p-10 backdrop-blur-xl">
+        <section className="relative z-10 rounded-[2.5rem] border border-white/5 bg-white/5 p-10 backdrop-blur-xl">
            <h2 className="text-lg font-bold text-white mb-8 flex items-center gap-3">
              <ShieldCheck className="w-5 h-5 text-emerald-400" />
              Security & Access

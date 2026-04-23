@@ -65,10 +65,10 @@ export default function CustomSelect({ options, value, onChange, placeholder = "
                      onChange(option.value);
                      setIsOpen(false);
                    }}
-                    className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                    className={`w-full flex items-center justify-between px-5 py-4 rounded-xl text-xs font-bold tracking-wide transition-all ${
                       value === option.value 
                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
-                       : 'text-zinc-400 hover:bg-white/5 hover:text-white'
+                       : 'text-zinc-400 hover:bg-white/10 hover:text-white'
                     }`}
                   >
                     <span className="truncate pr-4">{option.label}</span>
