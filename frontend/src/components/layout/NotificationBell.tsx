@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function NotificationBell() {
   const { isAuthenticated } = useAuthStore();
@@ -88,7 +89,14 @@ export default function NotificationBell() {
                       className={`flex items-start gap-4 p-4 rounded-[1.5rem] transition-all hover:bg-white/5 ${!n.isRead ? 'bg-white/[0.02]' : ''}`}
                     >
                        <div className="relative shrink-0">
-                          <img src={n.sender.avatar} className="h-10 w-10 rounded-xl object-cover" />
+                          <Image 
+                             src={n.sender.avatar} 
+                             alt={n.sender.username || "User"} 
+                             width={40}
+                             height={40}
+                             className="h-10 w-10 rounded-xl object-cover" 
+                             unoptimized
+                           />
                           <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-lg bg-black border border-white/10 flex items-center justify-center">
                              {getIcon(n.type)}
                           </div>
