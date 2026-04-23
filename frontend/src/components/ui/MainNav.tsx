@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -70,10 +71,13 @@ export default function MainNav() {
           {isAuthenticated ? (
             <Link href="/dashboard" className="flex items-center gap-3 rounded-2xl bg-white/5 p-1 pr-4 border border-white/5 hover:border-white/10 transition-all">
 
-              <img 
+              <Image 
                 src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`} 
+                width={36}
+                height={36}
                 className="h-9 w-9 rounded-xl border border-white/10 object-cover" 
                 alt="Profile" 
+                unoptimized
               />
               <div className="text-left">
                  <p className="text-[10px] font-black text-white uppercase tracking-wider">{user?.name?.split(' ')[0]}</p>
@@ -119,10 +123,13 @@ export default function MainNav() {
                   onClick={() => setIsOpen(false)}
                   className="mb-4 flex items-center gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-4"
                 >
-                  <img 
+                  <Image 
                     src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`} 
+                    width={48}
+                    height={48}
                     className="h-12 w-12 rounded-2xl border border-white/10 object-cover shadow-xl" 
                     alt="Profile" 
+                    unoptimized
                   />
                   <div>
                     <p className="text-sm font-black text-white uppercase tracking-widest">{user?.name}</p>
