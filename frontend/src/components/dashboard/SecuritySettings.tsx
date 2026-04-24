@@ -47,7 +47,7 @@ export default function SecuritySettings() {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="mt-12 rounded-[2.5rem] border border-white/10 bg-zinc-950/50 p-10 backdrop-blur-2xl relative overflow-hidden"
+      className="mt-12 rounded-[2.5rem] border border-white/10 bg-zinc-950/50 p-6 sm:p-10 backdrop-blur-2xl relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 p-10 opacity-5">
          <ShieldCheck className="w-40 h-40 text-indigo-500" />
@@ -86,7 +86,7 @@ export default function SecuritySettings() {
           </div>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2">
           <div className="space-y-4">
             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">
                New Access Key
