@@ -174,6 +174,7 @@ export default function UploadPage() {
               />
             </div>
 
+            <div className="space-y-4">
               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
                 Description <span className="text-red-500">*</span>
               </label>
@@ -188,6 +189,7 @@ export default function UploadPage() {
           </div>
 
           <div className="lg:col-span-2 space-y-8">
+             <div className="space-y-4">
                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
                  Note Asset (PDF/DOC) <span className="text-red-500">*</span>
                </label>
