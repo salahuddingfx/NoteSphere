@@ -130,7 +130,7 @@ export default function SecuritySettings() {
            </div>
            <button 
              disabled={loading}
-             className="rounded-2xl bg-white px-10 py-4 text-sm font-black text-black hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2"
+             className="rounded-2xl bg-white px-6 sm:px-10 py-4 text-xs sm:text-sm font-black text-black hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2"
            >
              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
              Update Credentials
