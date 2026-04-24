@@ -46,8 +46,8 @@ export default function UploadPage() {
   };
 
   const handleSubmit = async () => {
-    if (!title || !subject || noteFiles.length === 0) {
-      showToast("Please fill required fields and upload the note file.", "error");
+    if (!title || !subject || !description || noteFiles.length === 0) {
+      showToast("Please fill all required fields (Title, Subject, Description) and upload the note asset.", "error");
       return;
     }
 
@@ -75,7 +75,9 @@ export default function UploadPage() {
         formData.append("cover", blob, "cover.jpg");
       }
 
-      await api.post("/notes", formData);
+      await api.post("/notes", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
 
       router.push("/notes");
     } catch (err) {
@@ -109,7 +111,9 @@ export default function UploadPage() {
         <div className="grid gap-8 lg:grid-cols-5">
           <div className="lg:col-span-3 space-y-8">
             <div className="space-y-4">
-              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Title</label>
+              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
+                Note Title <span className="text-red-500">*</span>
+              </label>
               <input 
                 type="text" 
                 value={title}
@@ -121,7 +125,9 @@ export default function UploadPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-4">
-                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Subject Name</label>
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
+                  Subject Name <span className="text-red-500">*</span>
+                </label>
                 <input 
                   type="text" 
                   value={subject}
@@ -168,8 +174,9 @@ export default function UploadPage() {
               />
             </div>
 
-            <div className="space-y-4">
-              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Description</label>
+              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
+                Description <span className="text-red-500">*</span>
+              </label>
               <textarea 
                 rows={4}
                 value={description}
@@ -181,8 +188,9 @@ export default function UploadPage() {
           </div>
 
           <div className="lg:col-span-2 space-y-8">
-             <div className="space-y-4">
-               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Asset (PDF/DOC)</label>
+               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
+                 Note Asset (PDF/DOC) <span className="text-red-500">*</span>
+               </label>
                <div className="aspect-video rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
                   {noteFiles.length > 0 ? (
                     <div className="flex flex-col items-center">
