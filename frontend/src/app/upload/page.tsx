@@ -271,7 +271,7 @@ export default function UploadPage() {
       <AnimatePresence>
         {isCropping && selectedFile && (
           <ImageCropper 
-            image={selectedFile} 
+            image={selectedFile!} 
             onCropComplete={(img) => {
               setCroppedImage(img);
               setIsCropping(false);
