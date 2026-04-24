@@ -4,10 +4,17 @@ const ApiError = require("../utils/ApiError");
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+  const allowedMimeTypes = [
+    "application/pdf", 
+    "image/jpeg", 
+    "image/png", 
+    "image/webp",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ];
 
   if (!allowedMimeTypes.includes(file.mimetype)) {
-    cb(new ApiError(400, "Only PDF, JPEG, PNG, and WEBP files are allowed"));
+    cb(new ApiError(400, "Only PDF, JPEG, PNG, WEBP, and DOC files are allowed"));
     return;
   }
 

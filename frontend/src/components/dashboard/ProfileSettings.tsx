@@ -68,7 +68,7 @@ export default function ProfileSettings() {
     <motion.section 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-12 rounded-[2.5rem] border border-white/10 bg-white/5 p-10 backdrop-blur-2xl"
+      className="mt-12 rounded-[2.5rem] border border-white/10 bg-white/5 p-6 sm:p-10 backdrop-blur-2xl"
     >
       <header className="mb-10">
         <h2 className="text-2xl font-black text-white tracking-tighter">Vault Identity</h2>
@@ -78,12 +78,12 @@ export default function ProfileSettings() {
       <form onSubmit={handleSubmit} className="grid gap-10 lg:grid-cols-2">
         {/* Left: Bio & Avatar */}
         <div className="space-y-8">
-          <div className="flex flex-col md:flex-row items-center gap-10 p-8 rounded-[2rem] bg-black/40 border border-white/5 relative overflow-hidden group">
+          <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-10 p-6 sm:p-8 rounded-[2rem] bg-black/40 border border-white/5 relative overflow-hidden group">
              <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
                 <Sparkles className="w-32 h-32 text-white" />
              </div>
              
-             <div className="relative z-10 flex flex-col items-center">
+             <div className="relative z-10 flex flex-col items-center shrink-0">
                 <div className="relative group/avatar">
                    <Image 
                      src={formData.avatar} 

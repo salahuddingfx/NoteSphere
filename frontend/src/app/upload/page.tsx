@@ -17,7 +17,7 @@ export default function UploadPage() {
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [noteFile, setNoteFile] = useState<File | null>(null);
+  const [noteFiles, setNoteFiles] = useState<File[]>([]);
   const [isCropping, setIsCropping] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -40,13 +40,13 @@ export default function UploadPage() {
   };
 
   const handleNoteFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setNoteFile(e.target.files[0]);
+    if (e.target.files) {
+      setNoteFiles(Array.from(e.target.files));
     }
   };
 
   const handleSubmit = async () => {
-    if (!title || !subject || !noteFile) {
+    if (!title || !subject || noteFiles.length === 0) {
       showToast("Please fill required fields and upload the note file.", "error");
       return;
     }
@@ -61,13 +61,21 @@ export default function UploadPage() {
       formData.append("subject", subject);
       formData.append("subjectCode", subjectCode);
       formData.append("teacher", teacher);
-      formData.append("file", noteFile);
-      // If we have a cropped cover image, we should ideally handle it too, 
-      // but for now the backend expects the 'file' to be the note itself.
-
-      await api.post("/notes", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+      
+      // Append all note files
+      noteFiles.forEach(file => {
+        formData.append("file", file);
       });
+
+      // Append cover image if exists
+      if (croppedImage) {
+        // Convert base64 to blob
+        const res = await fetch(croppedImage);
+        const blob = await res.blob();
+        formData.append("cover", blob, "cover.jpg");
+      }
+
+      await api.post("/notes", formData);
 
       router.push("/notes");
     } catch (err) {
@@ -176,22 +184,27 @@ export default function UploadPage() {
              <div className="space-y-4">
                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Asset (PDF/DOC)</label>
                <div className="aspect-video rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
-                  {noteFile ? (
+                  {noteFiles.length > 0 ? (
                     <div className="flex flex-col items-center">
                        <FileText className="w-10 h-10 text-indigo-400 mb-2" />
-                       <p className="text-white font-bold truncate max-w-[200px]">{noteFile.name}</p>
-                       <p className="text-[10px] text-zinc-500 uppercase mt-1">{(noteFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                       <p className="text-white font-bold truncate max-w-[200px]">
+                         {noteFiles.length === 1 ? noteFiles[0].name : `${noteFiles.length} files selected`}
+                       </p>
+                       <p className="text-[10px] text-zinc-500 uppercase mt-1">
+                         {(noteFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB total
+                       </p>
                     </div>
                   ) : (
                     <>
                       <Upload className="w-8 h-8 text-zinc-500 group-hover:text-indigo-400 mb-4 transition-colors" />
-                      <p className="text-zinc-200 font-bold">Select PDF/Note</p>
+                      <p className="text-zinc-200 font-bold">Select PDF/Images</p>
                       <p className="text-xs text-zinc-500 mt-2">Up to 50MB supported</p>
                     </>
                   )}
                   <input 
                     type="file" 
-                    accept=".pdf,.doc,.docx" 
+                    accept=".pdf,.doc,.docx,image/*" 
+                    multiple
                     onChange={handleNoteFileChange}
                     className="absolute inset-0 opacity-0 cursor-pointer" 
                   />

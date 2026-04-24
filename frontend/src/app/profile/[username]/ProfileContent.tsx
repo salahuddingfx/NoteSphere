@@ -64,8 +64,8 @@ export default function ProfileContent() {
   const rank = getUserRank(profile.level);
 
   return (
-    <main className="min-h-screen bg-black px-4 py-12 sm:px-6 lg:px-10">
-      <div className="mx-auto w-full max-w-6xl mt-12">
+    <main className="min-h-screen bg-black px-4 py-8 sm:py-12 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-6xl mt-8 sm:mt-12">
         <button 
           onClick={() => router.back()}
           className="mb-12 flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-xs font-black uppercase tracking-widest"
@@ -74,10 +74,10 @@ export default function ProfileContent() {
           Back to Vault
         </button>
 
-        <section className="grid gap-12 lg:grid-cols-3">
+        <section className="grid gap-8 lg:gap-12 lg:grid-cols-3">
            <div className="space-y-8">
-              <div className="rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl text-center flex flex-col items-center">
-                 <div className="relative h-40 w-40 mb-8">
+              <div className="rounded-[2.5rem] border border-white/10 bg-white/5 p-6 sm:p-10 backdrop-blur-3xl text-center flex flex-col items-center">
+                 <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-6 sm:mb-8">
                     <Image 
                       src={profile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`} 
                       alt={profile.name} 
@@ -137,9 +137,9 @@ export default function ProfileContent() {
               </div>
            </div>
 
-           <div className="lg:col-span-2 space-y-12">
-              <div className="grid gap-6 md:grid-cols-2">
-                 <div className="rounded-[3rem] border border-white/10 bg-zinc-950 p-8 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
+           <div className="lg:col-span-2 space-y-10 lg:space-y-12">
+              <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+                 <div className="rounded-[2.5rem] border border-white/10 bg-zinc-950 p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
                     <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-indigo-500/10 to-transparent" />
                     <div className="relative w-48 h-48 mb-4">
                        <DynamicThreeBadge rank={rank.name} />
@@ -149,23 +149,23 @@ export default function ProfileContent() {
                     <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{profile.xp} Cumulative XP</p>
                  </div>
 
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="rounded-[2.5rem] border border-white/5 bg-white/5 p-8 backdrop-blur-xl flex flex-col justify-center">
-                       <FileText className="w-6 h-6 text-indigo-400 mb-4" />
-                       <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Assets Shared</p>
-                       <p className="text-3xl font-black text-white">{notes.length}</p>
+                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 bg-white/5 p-6 sm:p-8 backdrop-blur-xl flex flex-col justify-center">
+                       <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400 mb-3 sm:mb-4" />
+                       <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-zinc-500">Assets Shared</p>
+                       <p className="text-2xl sm:text-3xl font-black text-white">{notes.length}</p>
                     </div>
-                    <div className="rounded-[2.5rem] border border-white/5 bg-white/5 p-8 backdrop-blur-xl flex flex-col justify-center">
-                       <Download className="w-6 h-6 text-emerald-400 mb-4" />
-                       <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Total Pulls</p>
-                       <p className="text-3xl font-black text-white">
+                    <div className="rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 bg-white/5 p-6 sm:p-8 backdrop-blur-xl flex flex-col justify-center">
+                       <Download className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400 mb-3 sm:mb-4" />
+                       <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-zinc-500">Total Pulls</p>
+                       <p className="text-2xl sm:text-3xl font-black text-white">
                           {notes.reduce((acc, curr) => acc + (curr.downloads || 0), 0)}
                        </p>
                     </div>
-                    <div className="col-span-2 rounded-[2.5rem] border border-white/5 bg-white/5 p-8 backdrop-blur-xl">
-                       <Eye className="w-6 h-6 text-cyan-400 mb-4" />
-                       <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Asset Exposure</p>
-                       <p className="text-3xl font-black text-white">
+                    <div className="col-span-2 rounded-[2rem] sm:rounded-[2.5rem] border border-white/5 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
+                       <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400 mb-3 sm:mb-4" />
+                       <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-zinc-500">Asset Exposure</p>
+                       <p className="text-2xl sm:text-3xl font-black text-white">
                           {notes.reduce((acc, curr) => acc + (curr.views || 0), 0)} Views
                        </p>
                     </div>
@@ -186,21 +186,21 @@ export default function ProfileContent() {
                       <Link 
                         key={note._id} 
                         href={`/notes/${note.slug}`}
-                        className="group flex flex-col md:flex-row md:items-center justify-between rounded-[2rem] border border-white/5 bg-white/5 p-8 hover:border-indigo-500/30 transition-all backdrop-blur-xl overflow-hidden relative"
+                        className="group flex flex-col md:flex-row md:items-center justify-between rounded-[2rem] border border-white/5 bg-white/5 p-6 sm:p-8 hover:border-indigo-500/30 transition-all backdrop-blur-xl overflow-hidden relative"
                       >
                         <div className="absolute -right-4 -top-4 p-10 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
                            <FileText className="w-32 h-32 text-white" />
                         </div>
-                        <div className="flex items-center gap-6 relative z-10">
-                           <div className="h-16 w-16 rounded-2xl bg-indigo-500/10 flex flex-col items-center justify-center text-indigo-400 border border-indigo-500/10 group-hover:scale-105 transition-transform">
-                              <span className="text-[10px] font-black uppercase">{note.fileType}</span>
-                              <FileText className="w-4 h-4 mt-1" />
+                        <div className="flex items-center gap-4 sm:gap-6 relative z-10">
+                           <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-indigo-500/10 flex flex-col items-center justify-center text-indigo-400 border border-indigo-500/10 group-hover:scale-105 transition-transform shrink-0">
+                              <span className="text-[8px] sm:text-[10px] font-black uppercase">{note.fileType}</span>
+                              <FileText className="w-3 h-3 sm:w-4 sm:h-4 mt-1" />
                            </div>
                            <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">
+                              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-0.5 sm:mb-1">
                                 {note.subjectCode ? `${note.subjectCode} • ` : ""}{note.subject}
                               </p>
-                              <h4 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors leading-tight">
+                              <h4 className="text-lg sm:text-xl font-bold text-white group-hover:text-indigo-400 transition-colors leading-tight line-clamp-1">
                                  {note.title}
                               </h4>
                               <div className="flex gap-4 mt-3">

@@ -91,12 +91,12 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="grid gap-8 lg:grid-cols-3"
+          className="grid gap-6 lg:grid-cols-3"
         >
           {/* Main Profile Info */}
-          <div className="lg:col-span-2 space-y-8">
-            <header className="flex flex-col gap-8 rounded-[3rem] border border-white/10 bg-white/5 p-10 backdrop-blur-3xl md:flex-row md:items-center">
-              <div className="relative h-32 w-32 shrink-0">
+          <div className="lg:col-span-2 space-y-6">
+            <header className="flex flex-col gap-6 rounded-[2.5rem] border border-white/10 bg-white/5 p-6 sm:p-10 backdrop-blur-3xl md:flex-row md:items-center">
+              <div className="relative h-24 w-24 sm:h-32 sm:w-32 shrink-0">
                 <Image 
                   src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
                   alt={user.name} 
@@ -127,23 +127,23 @@ export default function DashboardPage() {
             </header>
 
             {/* Stats Grid */}
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
               {[
                 { icon: Building2, label: "Department", value: user.department, color: "text-indigo-400" },
                 { icon: TrendingUp, label: "Daily Streak", value: `${user.streakCount || 0} Days`, color: "text-amber-400" },
                 { icon: Diamond, label: "Content Level", value: `Level ${user.level || 1}`, color: "text-cyan-400" },
                 { icon: Award, label: "Total Rank XP", value: `${user.xp || 0} XP`, color: "text-purple-400" }
               ].map((stat, i) => (
-                <div key={i} className="rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-xl">
-                  <stat.icon className={`h-4 w-4 ${stat.color} mb-4`} />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{stat.label}</p>
-                  <p className="mt-1 text-lg font-bold text-white">{stat.value}</p>
+                <div key={i} className="rounded-2xl border border-white/5 bg-white/5 p-4 sm:p-6 backdrop-blur-xl">
+                  <stat.icon className={`h-4 w-4 ${stat.color} mb-3`} />
+                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-zinc-500">{stat.label}</p>
+                  <p className="mt-1 text-base sm:text-lg font-bold text-white">{stat.value}</p>
                 </div>
               ))}
             </div>
 
             {/* Level Progress */}
-            <div className="rounded-[2.5rem] border border-white/5 bg-white/5 p-8 backdrop-blur-xl">
+            <div className="rounded-[2.5rem] border border-white/5 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
                <div className="flex items-center justify-between mb-4">
                   <p className="text-xs font-black uppercase tracking-widest text-white flex items-center gap-2">
                      <Zap className="w-4 h-4 text-indigo-400" />
@@ -166,7 +166,7 @@ export default function DashboardPage() {
 
           {/* Rank Badge Side */}
           <div className="space-y-6">
-            <div className="rounded-[3rem] border border-white/10 bg-zinc-950 p-8 shadow-2xl relative overflow-hidden h-full flex flex-col items-center justify-center text-center">
+            <div className="rounded-[2.5rem] border border-white/10 bg-zinc-950 p-6 sm:p-8 shadow-2xl relative overflow-hidden h-full flex flex-col items-center justify-center text-center">
                <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-indigo-500/10 to-transparent pointer-events-none" />
                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-8 flex items-center gap-2">
                   <Diamond className="w-3 h-3" />
@@ -225,26 +225,26 @@ export default function DashboardPage() {
 
         {/* Contribution List */}
         <section className="mt-12">
-           <div className="rounded-[3rem] border border-white/5 bg-white/5 p-10 backdrop-blur-3xl overflow-hidden">
+           <div className="rounded-[2.5rem] border border-white/5 bg-white/5 p-6 sm:p-10 backdrop-blur-3xl overflow-hidden">
               <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-6">
-                 <div className="flex gap-4">
+                 <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
                     <button 
                       onClick={() => setActiveTab("history")}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
+                      className={`flex shrink-0 items-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
                     >
                       <History className="w-4 h-4" />
                       Contributions
                     </button>
                     <button 
                       onClick={() => setActiveTab("saved")}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'saved' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
+                      className={`flex shrink-0 items-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'saved' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
                     >
                       <Bookmark className="w-4 h-4" />
                       Collection
                     </button>
                     <button 
                       onClick={() => setActiveTab("playlists")}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'playlists' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
+                      className={`flex shrink-0 items-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'playlists' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'text-zinc-500 hover:text-white'}`}
                     >
                       <FolderOpen className="w-4 h-4" />
                       Playlists

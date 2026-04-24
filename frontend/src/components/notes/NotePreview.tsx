@@ -21,7 +21,7 @@ export default function NotePreview({ fileUrl, fileType, title }: NotePreviewPro
   const [hasError, setHasError] = useState(false);
 
 
-  const isImage = ["jpg", "jpeg", "png", "webp"].includes(fileType.toLowerCase());
+  const isImage = ["jpg", "jpeg", "png", "webp", "image"].includes(fileType.toLowerCase());
   const isPDF = fileType.toLowerCase() === "pdf";
 
   const optimizeUrl = (url: string) => {

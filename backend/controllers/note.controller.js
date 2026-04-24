@@ -56,17 +56,33 @@ const inferNoteFileType = (mimetype) => {
 const createNote = asyncHandler(async (req, res) => {
   const { title, description, department, semester, subject, subjectCode, teacher, category, tags } = req.body;
 
-
-  if (!req.file) {
-    throw new ApiError(400, "File is required");
+  if (!req.files || !req.files.file || req.files.file.length === 0) {
+    throw new ApiError(400, "At least one note file is required");
   }
 
   if (!title || !description || !department || !semester || !subject) {
     throw new ApiError(400, "Missing required fields");
   }
 
+  const noteFiles = req.files.file;
+  const coverFiles = req.files.cover || [];
+
+  // For now, we take the first file as the primary note asset
+  // In the future, we could support multiple file uploads
+  const mainFile = noteFiles[0];
+  
   const slug = await generateUniqueSlug(title);
-  const uploadResult = await uploadToCloudinary(req.file.buffer, req.file.mimetype);
+  
+  // Upload main file to Cloudinary
+  const uploadResult = await uploadToCloudinary(mainFile.buffer, mainFile.mimetype);
+  
+  // Upload cover image if provided
+  let coverUrl = "";
+  if (coverFiles.length > 0) {
+    const coverUpload = await uploadToCloudinary(coverFiles[0].buffer, coverFiles[0].mimetype);
+    coverUrl = coverUpload.secure_url;
+  }
+
   const normalizedTags = Array.isArray(tags)
     ? tags
     : typeof tags === "string"
@@ -78,8 +94,9 @@ const createNote = asyncHandler(async (req, res) => {
     slug,
     description,
     fileUrl: uploadResult.secure_url,
+    coverUrl: coverUrl,
     publicId: uploadResult.public_id,
-    fileType: inferNoteFileType(req.file.mimetype),
+    fileType: inferNoteFileType(mainFile.mimetype),
     department,
     semester,
     subject,
