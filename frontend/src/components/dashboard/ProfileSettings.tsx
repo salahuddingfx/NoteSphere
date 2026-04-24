@@ -154,14 +154,14 @@ export default function ProfileSettings() {
                value={formData.bio}
                onChange={(e) => setFormData({...formData, bio: e.target.value})}
                placeholder="Describe your academic journey..."
-               className="w-full rounded-3xl border border-white/5 bg-black/40 p-6 text-sm text-zinc-300 focus:border-indigo-500 outline-none transition-all min-h-[150px] resize-none leading-relaxed"
+               className="w-full rounded-2xl sm:rounded-3xl border border-white/5 bg-black/40 p-4 sm:p-6 text-sm text-zinc-300 focus:border-indigo-500 outline-none transition-all min-h-[150px] resize-none leading-relaxed"
              />
           </div>
         </div>
 
 
         {/* Right: Socials */}
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
           {[
             { key: "instagram", label: "Instagram", Icon: Camera, color: "text-pink-500" },
             { key: "facebook", label: "Facebook", Icon: Users, color: "text-blue-500" },
