@@ -8,6 +8,7 @@ const {
   toggleLike,
   trackDownload,
   generateSummary,
+  suggestMetadata,
 } = require("../controllers/note.controller");
 const { protect } = require("../middlewares/auth.middleware");
 const upload = require("../middlewares/upload.middleware");
@@ -25,6 +26,7 @@ router.delete("/:id", protect, deleteNote);
 router.post("/:id/like", protect, toggleLike);
 router.post("/:id/download", protect, trackDownload);
 router.post("/:id/summary", protect, generateSummary);
+router.post("/suggest-metadata", protect, suggestMetadata);
 
 module.exports = router;
 
