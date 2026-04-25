@@ -45,8 +45,35 @@ export default function UploadPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => setPageLoading(false), 1000);
+    
+    // Load draft
+    const draft = localStorage.getItem("note_upload_draft");
+    if (draft) {
+      try {
+        const data = JSON.parse(draft);
+        setTitle(data.title || "");
+        setSubject(data.subject || "");
+        setSubjectCode(data.subjectCode || "");
+        setTeacher(data.teacher || "");
+        setDescription(data.description || "");
+        setDepartment(data.department || "CSE");
+        setSemester(data.semester || "Semester 1");
+        setCategory(data.category || "Hand-written");
+        setTagList(data.tagList || []);
+      } catch (e) {
+        console.error("Draft load failed", e);
+      }
+    }
+    
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!pageLoading) {
+      const draftData = { title, subject, subjectCode, teacher, description, department, semester, category, tagList };
+      localStorage.setItem("note_upload_draft", JSON.stringify(draftData));
+    }
+  }, [title, subject, subjectCode, teacher, description, department, semester, category, tagList, pageLoading]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -207,6 +234,55 @@ export default function UploadPage() {
     setNoteFiles(newNoteFiles);
   };
 
+  const handleAiCover = async () => {
+    if (!title && !subject) {
+      showToast("Title or Subject lagbe cover generate korte bruh!", "error");
+      return;
+    }
+    setSuggesting(true);
+    try {
+      // In a real app, this would call a DALL-E/Midjourney API.
+      // For NoteSphere, we use a pro-level dynamic gradient generator based on subject mood.
+      const moods: Record<string, string> = {
+        "CSE": "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
+        "EEE": "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)",
+        "MAT": "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+        "default": "linear-gradient(135deg, #18181b 0%, #3f3f46 100%)"
+      };
+      
+      const mood = moods[department] || moods.default;
+      
+      // Create a canvas-based aesthetic cover
+      const canvas = document.createElement("canvas");
+      canvas.width = 1200;
+      canvas.height = 1600;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const grad = ctx.createLinearGradient(0, 0, 1200, 1600);
+        grad.addColorStop(0, department === "CSE" ? "#4f46e5" : "#18181b");
+        grad.addColorStop(1, department === "CSE" ? "#06b6d4" : "#3f3f46");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1200, 1600);
+        
+        ctx.fillStyle = "white";
+        ctx.font = "bold 80px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(subject || "ACADEMIC NOTE", 600, 700);
+        
+        ctx.font = "40px sans-serif";
+        ctx.globalAlpha = 0.6;
+        ctx.fillText(title || department, 600, 800);
+        
+        setCroppedImage(canvas.toDataURL("image/jpeg"));
+        showToast("AI Magic Cover generated! ✨", "success");
+      }
+    } catch (err) {
+      showToast("Cover generation fail!", "error");
+    } finally {
+      setSuggesting(false);
+    }
+  };
+
   const triggerCamera = () => {
     cameraInputRef.current?.click();
   };
@@ -262,6 +338,8 @@ export default function UploadPage() {
         origin: { y: 0.6 },
         colors: ["#6366f1", "#a855f7", "#ffffff"]
       });
+      
+      localStorage.removeItem("note_upload_draft");
       
       setShowXP(true);
       setTimeout(() => {
@@ -567,7 +645,17 @@ export default function UploadPage() {
               </div>
 
             <div className="space-y-4">
-              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover (Optional)</label>
+              <div className="flex justify-between items-end">
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover (Optional)</label>
+                <button 
+                  onClick={handleAiCover}
+                  disabled={suggesting}
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-tighter hover:bg-indigo-500/20 transition-all border border-indigo-500/20 disabled:opacity-50"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Magic Cover
+                </button>
+              </div>
               <div className="aspect-[3/4] rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
                 {croppedImage ? (
                   <Image 
