@@ -349,13 +349,12 @@ export default function UploadPage() {
 
       // Append cover image if exists
       if (croppedImage) {
-        // Convert base64 to blob
-        const res = await fetch(croppedImage);
-        const blob = await res.blob();
+        const coverRes = await fetch(croppedImage);
+        const blob = await coverRes.blob();
         formData.append("cover", blob, "cover.jpg");
       }
 
-      await api.post("/notes", formData, {
+      const res = await api.post("/notes", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round(
