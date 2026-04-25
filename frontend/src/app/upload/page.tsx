@@ -105,11 +105,24 @@ export default function UploadPage() {
     setTagList((prev) => prev.filter((t) => t !== tagToRemove));
   };
 
-  const removeTag = (tagToRemove: string) => {
-    setTagList((prev) => prev.filter((t) => t !== tagToRemove));
+  const SUBJECT_MAP: Record<string, string> = {
+    "CSE-1101": "Structured Programming Language",
+    "CSE-1201": "Object Oriented Programming",
+    "CSE-2101": "Data Structures",
+    "CSE-2201": "Algorithms",
+    "CSE-3101": "Operating Systems",
+    "CSE-3201": "Database Management Systems",
+    "EEE-1101": "Electrical Circuits",
+    "MAT-1101": "Calculus and Differential Equations"
   };
 
-  const handleAiSuggest = async () => {
+  const handleSubjectCodeChange = (code: string) => {
+    const upperCode = code.toUpperCase();
+    setSubjectCode(upperCode);
+    if (SUBJECT_MAP[upperCode]) {
+      setSubject(SUBJECT_MAP[upperCode]);
+    }
+  };
     if (!title && !subject) {
       showToast("Add a title or subject first to use AI magic!", "error");
       return;
@@ -235,7 +248,7 @@ export default function UploadPage() {
                 <input 
                   type="text" 
                   value={subjectCode}
-                  onChange={(e) => setSubjectCode(e.target.value)}
+                  onChange={(e) => handleSubjectCodeChange(e.target.value)}
                   placeholder="e.g. CSE-2101" 
                   className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
                 />
