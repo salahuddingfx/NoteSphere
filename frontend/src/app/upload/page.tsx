@@ -6,8 +6,9 @@ import MainNav from "@/components/ui/MainNav";
 import ImageCropper from "@/components/upload/ImageCropper";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X, Wand2, Camera, Share2, Volume2, VolumeX, Lock, Globe } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X, Wand2, Camera, Share2, Volume2, VolumeX, Lock, Globe, Zap } from "lucide-react";
 import confetti from "canvas-confetti";
+import imageCompression from "browser-image-compression";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
@@ -32,6 +33,7 @@ export default function UploadPage() {
   const [tagList, setTagList] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
@@ -57,20 +59,50 @@ export default function UploadPage() {
     }
   };
 
-  const handleNoteFiles = (files: File[]) => {
-    setNoteFiles((prev) => [...prev, ...files]);
-    
-    const newPreviews = files.map(file => ({
-      url: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
-      name: file.name,
-      type: file.type
-    }));
-    setPreviews((prev) => [...prev, ...newPreviews]);
+  const handleNoteFiles = async (files: File[]) => {
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+    const processedFiles: File[] = [];
+
+    setCompressing(true);
+    try {
+      for (const file of files) {
+        if (file.size > MAX_FILE_SIZE) {
+          showToast(`File ${file.name} is too large. Max 20MB allowed.`, "error");
+          continue;
+        }
+
+        if (file.type.startsWith("image/")) {
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          };
+          const compressedFile = await imageCompression(file, options);
+          processedFiles.push(compressedFile);
+        } else {
+          processedFiles.push(file);
+        }
+      }
+
+      setNoteFiles((prev) => [...prev, ...processedFiles]);
+      
+      const newPreviews = processedFiles.map(file => ({
+        url: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+        name: file.name,
+        type: file.type
+      }));
+      setPreviews((prev) => [...prev, ...newPreviews]);
+    } catch (err) {
+      console.error("Processing error:", err);
+      showToast("Error processing files. Please try again.", "error");
+    } finally {
+      setCompressing(false);
+    }
   };
 
-  const handleNoteFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNoteFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      handleNoteFiles(Array.from(e.target.files));
+      await handleNoteFiles(Array.from(e.target.files));
     }
   };
 
@@ -83,11 +115,11 @@ export default function UploadPage() {
     setIsDragging(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files) {
-      handleNoteFiles(Array.from(e.dataTransfer.files));
+      await handleNoteFiles(Array.from(e.dataTransfer.files));
     }
   };
 
@@ -447,6 +479,20 @@ export default function UploadPage() {
                   onDrop={handleDrop}
                 >
                   <AnimatePresence>
+                    {compressing && (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center rounded-3xl"
+                      >
+                         <div className="relative">
+                            <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+                            <Zap className="w-4 h-4 text-yellow-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                         </div>
+                         <p className="text-[10px] text-white font-black uppercase tracking-widest mt-3">Optimizing Assets...</p>
+                      </motion.div>
+                    )}
                     {previews.map((preview, index) => (
                       <Reorder.Item 
                         key={preview.name} 
