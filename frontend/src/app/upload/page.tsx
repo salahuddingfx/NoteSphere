@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import MainNav from "@/components/ui/MainNav";
 import ImageCropper from "@/components/upload/ImageCropper";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X, Wand2 } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X, Wand2, Camera, Share2 } from "lucide-react";
+import confetti from "canvas-confetti";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
@@ -34,6 +35,8 @@ export default function UploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
+  const [showXP, setShowXP] = useState(false);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -144,6 +147,10 @@ export default function UploadPage() {
     }
   };
 
+  const triggerCamera = () => {
+    cameraInputRef.current?.click();
+  };
+
   const handleSubmit = async () => {
     if (!title || !subject || !description || noteFiles.length === 0) {
       showToast("Please fill all required fields (Title, Subject, Description) and upload the note asset.", "error");
@@ -187,7 +194,18 @@ export default function UploadPage() {
         },
       });
 
-      router.push("/notes");
+      // Celebration and XP Logic
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#6366f1", "#a855f7", "#ffffff"]
+      });
+      
+      setShowXP(true);
+      setTimeout(() => {
+        router.push("/notes");
+      }, 2000);
     } catch (err) {
       console.error("Upload failed", err);
       alert("Upload failed. Check console.");
@@ -407,6 +425,21 @@ export default function UploadPage() {
                     <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                       {noteFiles.length} {noteFiles.length === 1 ? "File" : "Files"} selected
                     </p>
+                    <button 
+                      onClick={triggerCamera}
+                      className="flex items-center gap-1.5 text-[10px] text-indigo-400 font-bold uppercase tracking-widest hover:text-white transition-colors"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      Snap Page
+                    </button>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      capture="environment" 
+                      className="hidden" 
+                      ref={cameraInputRef}
+                      onChange={handleNoteFileChange}
+                    />
                     <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                       {(noteFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB Total
                     </p>
@@ -462,7 +495,20 @@ export default function UploadPage() {
             </div>
           )}
 
-          <div className="flex justify-end">
+          <div className="flex justify-end relative">
+            <AnimatePresence>
+              {showXP && (
+                <motion.div
+                  initial={{ opacity: 0, y: 0 }}
+                  animate={{ opacity: 1, y: -60 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute right-0 top-0 text-2xl font-black text-indigo-400 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                >
+                  +100 XP ⚡
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
             <button 
               disabled={loading}
               onClick={handleSubmit}
@@ -476,6 +522,47 @@ export default function UploadPage() {
               {loading ? `Publishing ${uploadProgress}%` : "Submit to Vault"}
             </button>
           </div>
+        </div>
+
+        {/* Social Preview Section */}
+        <div className="mt-20 border-t border-white/10 pt-12">
+           <header className="mb-8 flex items-center gap-3">
+             <Share2 className="w-5 h-5 text-zinc-500" />
+             <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Sharing Preview</h2>
+           </header>
+           
+           <div className="max-w-md mx-auto rounded-3xl bg-[#1c1c1e] border border-white/5 overflow-hidden shadow-2xl">
+             <div className="aspect-[1.91/1] relative bg-zinc-900 flex items-center justify-center overflow-hidden">
+                {croppedImage ? (
+                  <Image src={croppedImage} alt="Social" fill className="object-cover opacity-60" unoptimized />
+                ) : (
+                  <div className="text-zinc-700 font-bold italic">Cover Preview</div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c1e] to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                   <div className="flex items-center gap-2 mb-2">
+                      <div className="h-6 w-6 rounded-lg bg-indigo-500 flex items-center justify-center">
+                        <Sparkles className="w-3 h-3 text-white" />
+                      </div>
+                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">NoteSphere</span>
+                   </div>
+                   <h3 className="text-lg font-bold text-white leading-tight truncate">{title || "Your Note Title"}</h3>
+                </div>
+             </div>
+             <div className="p-4 space-y-2">
+                <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                  {description || "Add a description to see how this note will appear when shared with your peers."}
+                </p>
+                <div className="flex items-center gap-2 pt-2 text-[10px] font-bold text-indigo-400/60 uppercase">
+                   <span>{subject || "Subject"}</span>
+                   <span>•</span>
+                   <span>{department}</span>
+                </div>
+             </div>
+           </div>
+           <p className="text-center text-[10px] text-zinc-600 mt-6 uppercase tracking-widest italic">
+             Optimized for WhatsApp, Messenger, and LinkedIn
+           </p>
         </div>
       </section>
 
