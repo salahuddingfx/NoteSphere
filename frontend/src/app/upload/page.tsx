@@ -28,7 +28,8 @@ export default function UploadPage() {
   const [subjectCode, setSubjectCode] = useState("");
   const [teacher, setTeacher] = useState("");
   const [category, setCategory] = useState("Hand-written");
-  const [tags, setTags] = useState("");
+  const [tagList, setTagList] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -86,6 +87,23 @@ export default function UploadPage() {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleTagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const val = tagInput.trim().replace(/,/g, "");
+      if (val && !tagList.includes(val)) {
+        setTagList((prev) => [...prev, val]);
+        setTagInput("");
+      }
+    } else if (e.key === "Backspace" && !tagInput && tagList.length > 0) {
+      setTagList((prev) => prev.slice(0, -1));
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTagList((prev) => prev.filter((t) => t !== tagToRemove));
+  };
+
   const handleSubmit = async () => {
     if (!title || !subject || !description || noteFiles.length === 0) {
       showToast("Please fill all required fields (Title, Subject, Description) and upload the note asset.", "error");
@@ -104,7 +122,7 @@ export default function UploadPage() {
       formData.append("teacher", teacher);
       
       formData.append("category", category);
-      formData.append("tags", tags);
+      formData.append("tags", tagList.join(","));
       
       // Append all note files
       noteFiles.forEach(file => {
@@ -245,14 +263,33 @@ export default function UploadPage() {
                 onChange={setCategory} 
               />
               <div className="space-y-4">
-                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Tags (Optional)</label>
-                <input 
-                  type="text" 
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  placeholder="e.g. organic, midterm, exam" 
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
-                />
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Tags (Press Enter)</label>
+                <div className="flex flex-wrap gap-2 p-2 rounded-2xl border border-white/10 bg-white/5 min-h-[56px] focus-within:border-indigo-500 transition-colors">
+                  <AnimatePresence>
+                    {tagList.map((tag) => (
+                      <motion.span
+                        key={tag}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-bold border border-indigo-500/30"
+                      >
+                        #{tag}
+                        <button onClick={() => removeTag(tag)} className="hover:text-white transition-colors">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </motion.span>
+                    ))}
+                  </AnimatePresence>
+                  <input 
+                    type="text" 
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagInput}
+                    placeholder={tagList.length === 0 ? "e.g. midterm, organic" : ""} 
+                    className="flex-1 bg-transparent border-none outline-none text-white text-sm min-w-[120px]"
+                  />
+                </div>
               </div>
             </div>
           </div>
