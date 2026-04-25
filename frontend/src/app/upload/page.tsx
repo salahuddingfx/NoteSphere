@@ -6,7 +6,7 @@ import MainNav from "@/components/ui/MainNav";
 import ImageCropper from "@/components/upload/ImageCropper";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X, Wand2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
@@ -33,6 +33,7 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -102,6 +103,31 @@ export default function UploadPage() {
 
   const removeTag = (tagToRemove: string) => {
     setTagList((prev) => prev.filter((t) => t !== tagToRemove));
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTagList((prev) => prev.filter((t) => t !== tagToRemove));
+  };
+
+  const handleAiSuggest = async () => {
+    if (!title && !subject) {
+      showToast("Add a title or subject first to use AI magic!", "error");
+      return;
+    }
+    setSuggesting(true);
+    try {
+      const res = await api.post("/notes/suggest-metadata", { title, subject, subjectCode, teacher });
+      if (res.data.success) {
+        setDescription(res.data.suggestions.description);
+        setTagList(res.data.suggestions.tags);
+        showToast("AI Magic applied! Check description and tags.", "success");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("AI Magic failed. Try again later.", "error");
+    } finally {
+      setSuggesting(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -243,14 +269,24 @@ export default function UploadPage() {
             </div>
 
             <div className="space-y-4">
-              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
-                Description <span className="text-red-500">*</span>
-              </label>
+              <div className="flex justify-between items-end">
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <button 
+                  onClick={handleAiSuggest}
+                  disabled={suggesting}
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-tighter hover:bg-indigo-500/20 transition-all border border-indigo-500/20 disabled:opacity-50"
+                >
+                  {suggesting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                  {suggesting ? "Magic working..." : "Magic Enhance"}
+                </button>
+              </div>
               <textarea 
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="What covers these notes?" 
+                placeholder="What covers these notes? Or use Magic Enhance ✨" 
                 className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
               />
             </div>
