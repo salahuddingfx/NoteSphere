@@ -49,19 +49,19 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black px-4 py-12 sm:px-6 lg:px-10">
+    <main className="min-h-screen bg-black px-6 pt-40 pb-32 sm:px-10 lg:px-16">
       <MainNav />
-      <section className="mx-auto w-full max-w-5xl mt-12">
-        <header className="mb-12 text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-indigo-400 font-bold mb-4">Academic Prestige</p>
-          <h1 className="text-6xl font-black text-white tracking-tighter mb-4 italic uppercase">Hall of Fame</h1>
-          <p className="max-w-2xl mx-auto text-zinc-500 text-lg font-medium leading-relaxed">
+      <section className="mx-auto w-full max-w-6xl">
+        <header className="mb-20 text-center">
+          <p className="text-xs uppercase tracking-[0.5em] text-indigo-400 font-black mb-6">Academic Prestige</p>
+          <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 italic uppercase leading-[0.8]">Hall of Fame</h1>
+          <p className="max-w-2xl mx-auto text-zinc-500 text-lg md:text-xl font-medium leading-relaxed">
             Recognizing the scholars who empower the community through knowledge sharing and asset contribution.
           </p>
         </header>
 
         {/* Toggle Switch */}
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-20">
            <div className="flex p-1.5 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-3xl">
               <button 
                 onClick={() => setIsMonthly(false)}
@@ -97,7 +97,7 @@ export default function LeaderboardPage() {
                 key="list"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="space-y-6"
+                className="space-y-8"
               >
                 {leaders.map((user, idx) => {
                   const color = getRankColor(idx);
@@ -110,7 +110,7 @@ export default function LeaderboardPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className={`group relative flex flex-col md:flex-row md:items-center justify-between rounded-[2.5rem] border p-8 backdrop-blur-xl transition-all ${
+                        className={`group relative flex flex-col md:flex-row md:items-center justify-between rounded-[3rem] border px-10 py-9 backdrop-blur-xl transition-all ${
                           idx === 0 ? 'border-amber-500/30 bg-amber-500/[0.03] shadow-2xl shadow-amber-500/10' :
                           idx === 1 ? 'border-slate-300/30 bg-slate-300/[0.03]' :
                           idx === 2 ? 'border-orange-600/30 bg-orange-600/[0.03]' :
@@ -184,15 +184,15 @@ export default function LeaderboardPage() {
           </AnimatePresence>
         </div>
 
-        <div className="mt-16 rounded-[3rem] border border-white/5 bg-white/[0.02] p-12 text-center relative overflow-hidden">
-           <div className="absolute top-0 right-0 p-10 opacity-5">
-              <Trophy className="w-40 h-40 text-white" />
+        <div className="mt-32 rounded-[4rem] border border-white/5 bg-white/[0.02] px-12 py-20 text-center relative overflow-hidden">
+           <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+              <Trophy className="w-64 h-64 text-white" />
            </div>
-           <h4 className="text-xl font-bold text-white mb-2">&quot;Sharing knowledge is the ultimate act of academic prestige.&quot;</h4>
-           <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Transcend the ranks. Empower the Nexus.</p>
+           <h4 className="text-2xl md:text-3xl font-black text-white mb-4 tracking-tight italic uppercase">&quot;Sharing knowledge is the ultimate act of academic prestige.&quot;</h4>
+           <p className="text-xs text-zinc-500 uppercase tracking-[0.4em] font-black">Transcend the ranks. Empower the Nexus.</p>
            <Link 
             href="/upload" 
-            className="inline-flex items-center gap-2 mt-8 px-8 py-4 rounded-2xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20 active:scale-95"
+            className="inline-flex items-center gap-2 mt-10 px-10 py-5 rounded-2xl bg-indigo-600 text-white text-[11px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-2xl shadow-indigo-600/30 active:scale-95"
            >
               <Zap className="w-4 h-4" /> Start Contributing
            </Link>
