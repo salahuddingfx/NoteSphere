@@ -110,7 +110,7 @@ export default function LeaderboardPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className={`group relative flex flex-col md:flex-row md:items-center justify-between rounded-[3rem] border px-10 py-9 backdrop-blur-xl transition-all ${
+                        className={`group relative flex flex-col md:flex-row md:items-center justify-between rounded-[2rem] md:rounded-[3rem] border px-6 py-8 md:px-10 md:py-9 backdrop-blur-xl transition-all ${
                           idx === 0 ? 'border-amber-500/30 bg-amber-500/[0.03] shadow-2xl shadow-amber-500/10' :
                           idx === 1 ? 'border-slate-300/30 bg-slate-300/[0.03]' :
                           idx === 2 ? 'border-orange-600/30 bg-orange-600/[0.03]' :
@@ -184,7 +184,7 @@ export default function LeaderboardPage() {
           </AnimatePresence>
         </div>
 
-        <div className="mt-32 rounded-[4rem] border border-white/5 bg-white/[0.02] px-12 py-20 text-center relative overflow-hidden">
+        <div className="mt-24 md:mt-32 rounded-[2.5rem] md:rounded-[4rem] border border-white/5 bg-white/[0.02] px-8 py-12 md:px-12 md:py-20 text-center relative overflow-hidden">
            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
               <Trophy className="w-64 h-64 text-white" />
            </div>
