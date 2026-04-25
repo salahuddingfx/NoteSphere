@@ -27,7 +27,11 @@ export default function UploadPage() {
   const [subject, setSubject] = useState("");
   const [subjectCode, setSubjectCode] = useState("");
   const [teacher, setTeacher] = useState("");
+  const [category, setCategory] = useState("Hand-written");
+  const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -40,17 +44,37 @@ export default function UploadPage() {
     }
   };
 
+  const handleNoteFiles = (files: File[]) => {
+    setNoteFiles((prev) => [...prev, ...files]);
+    
+    const newPreviews = files.map(file => ({
+      url: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+      name: file.name,
+      type: file.type
+    }));
+    setPreviews((prev) => [...prev, ...newPreviews]);
+  };
+
   const handleNoteFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setNoteFiles((prev) => [...prev, ...files]);
-      
-      const newPreviews = files.map(file => ({
-        url: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
-        name: file.name,
-        type: file.type
-      }));
-      setPreviews((prev) => [...prev, ...newPreviews]);
+      handleNoteFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files) {
+      handleNoteFiles(Array.from(e.dataTransfer.files));
     }
   };
 
@@ -79,6 +103,9 @@ export default function UploadPage() {
       formData.append("subjectCode", subjectCode);
       formData.append("teacher", teacher);
       
+      formData.append("category", category);
+      formData.append("tags", tags);
+      
       // Append all note files
       noteFiles.forEach(file => {
         formData.append("file", file);
@@ -93,7 +120,13 @@ export default function UploadPage() {
       }
 
       await api.post("/notes", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / (progressEvent.total || 1)
+          );
+          setUploadProgress(percentCompleted);
+        },
       });
 
       router.push("/notes");
@@ -203,6 +236,25 @@ export default function UploadPage() {
                 className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
               />
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <CustomSelect 
+                label="Note Category" 
+                options={["Hand-written", "Digital", "Exam Paper", "Assignment", "Lab Report", "Other"].map(opt => ({ value: opt, label: opt }))} 
+                value={category} 
+                onChange={setCategory} 
+              />
+              <div className="space-y-4">
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Tags (Optional)</label>
+                <input 
+                  type="text" 
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  placeholder="e.g. organic, midterm, exam" 
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-white placeholder:text-zinc-600 focus:border-indigo-500 focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-2 space-y-8">
@@ -211,7 +263,12 @@ export default function UploadPage() {
                   Note Assets (PDF/DOC/Images) <span className="text-red-500">*</span>
                 </label>
                 
-                <div className="grid grid-cols-2 gap-3">
+                <div 
+                  className={`grid grid-cols-2 gap-3 p-3 rounded-3xl border-2 border-dashed transition-all ${isDragging ? 'border-indigo-500 bg-indigo-500/10' : 'border-white/10 bg-white/5'}`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
                   <AnimatePresence>
                     {previews.map((preview, index) => (
                       <motion.div 
@@ -300,19 +357,38 @@ export default function UploadPage() {
           </div>
         </div>
 
-        <div className="mt-12 flex justify-end">
-          <button 
-            disabled={loading}
-            onClick={handleSubmit}
-            className="group px-12 py-4 rounded-2xl bg-white text-black font-black hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center gap-3 disabled:opacity-50 disabled:scale-100"
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <CheckCircle className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
-            )}
-            {loading ? "Publishing..." : "Submit to Vault"}
-          </button>
+        <div className="mt-12 space-y-6">
+          {loading && uploadProgress > 0 && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-indigo-400">
+                <span>Uploading to Vault</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${uploadProgress}%` }}
+                  transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button 
+              disabled={loading}
+              onClick={handleSubmit}
+              className="group px-12 py-4 rounded-2xl bg-white text-black font-black hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center gap-3 disabled:opacity-50 disabled:scale-100"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <CheckCircle className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
+              )}
+              {loading ? `Publishing ${uploadProgress}%` : "Submit to Vault"}
+            </button>
+          </div>
         </div>
       </section>
 
