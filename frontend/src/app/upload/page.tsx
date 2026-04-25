@@ -428,7 +428,6 @@ export default function UploadPage() {
                     className="flex-1 bg-transparent border-none outline-none text-white text-sm min-w-[120px]"
                   />
                 </div>
-              </div>
             </div>
           </div>
 
@@ -546,7 +545,6 @@ export default function UploadPage() {
                   onChange={handleImageChange}
                   className="absolute inset-0 opacity-0 cursor-pointer" 
                 />
-              </div>
             </div>
           </div>
         </div>
