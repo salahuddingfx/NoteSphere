@@ -97,7 +97,7 @@ export default function LeaderboardPage() {
                 key="list"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="space-y-8"
+                className="flex flex-col gap-8"
               >
                 {leaders.map((user, idx) => {
                   const color = getRankColor(idx);
