@@ -6,7 +6,7 @@ import MainNav from "@/components/ui/MainNav";
 import ImageCropper from "@/components/upload/ImageCropper";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X } from "lucide-react";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
@@ -18,6 +18,7 @@ export default function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [noteFiles, setNoteFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<{ url: string; name: string; type: string }[]>([]);
   const [isCropping, setIsCropping] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -41,8 +42,24 @@ export default function UploadPage() {
 
   const handleNoteFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setNoteFiles(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      setNoteFiles((prev) => [...prev, ...files]);
+      
+      const newPreviews = files.map(file => ({
+        url: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+        name: file.name,
+        type: file.type
+      }));
+      setPreviews((prev) => [...prev, ...newPreviews]);
     }
+  };
+
+  const removeFile = (index: number) => {
+    setNoteFiles((prev) => prev.filter((_, i) => i !== index));
+    if (previews[index].url) {
+      URL.revokeObjectURL(previews[index].url);
+    }
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -189,37 +206,69 @@ export default function UploadPage() {
           </div>
 
           <div className="lg:col-span-2 space-y-8">
-            <div className="space-y-4">
-              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
-                Note Asset (PDF/DOC) <span className="text-red-500">*</span>
-              </label>
-              <div className="aspect-video rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
-                {noteFiles.length > 0 ? (
-                  <div className="flex flex-col items-center">
-                    <FileText className="w-10 h-10 text-indigo-400 mb-2" />
-                    <p className="text-white font-bold truncate max-w-[200px]">
-                      {noteFiles.length === 1 ? noteFiles[0].name : `${noteFiles.length} files selected`}
+              <div className="space-y-4">
+                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
+                  Note Assets (PDF/DOC/Images) <span className="text-red-500">*</span>
+                </label>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <AnimatePresence>
+                    {previews.map((preview, index) => (
+                      <motion.div 
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="relative aspect-square rounded-2xl bg-white/5 border border-white/10 overflow-hidden group"
+                      >
+                        {preview.url ? (
+                          <Image 
+                            src={preview.url} 
+                            alt={preview.name} 
+                            fill 
+                            className="object-cover" 
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                             <FileText className="w-8 h-8 text-indigo-400 mb-2" />
+                             <p className="text-[10px] text-zinc-400 truncate w-full">{preview.name}</p>
+                          </div>
+                        )}
+                        <button 
+                          onClick={() => removeFile(index)}
+                          className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  
+                  <div className="relative aspect-square rounded-2xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-4 text-center group hover:border-indigo-500 transition-colors cursor-pointer overflow-hidden">
+                    <Upload className="w-6 h-6 text-zinc-500 group-hover:text-indigo-400 mb-2 transition-colors" />
+                    <p className="text-[10px] text-zinc-400 font-bold">Add Files</p>
+                    <input 
+                      type="file" 
+                      accept=".pdf,.doc,.docx,image/*" 
+                      multiple
+                      onChange={handleNoteFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                    />
+                  </div>
+                </div>
+                
+                {noteFiles.length > 0 && (
+                  <div className="flex justify-between items-center px-2">
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                      {noteFiles.length} {noteFiles.length === 1 ? "File" : "Files"} selected
                     </p>
-                    <p className="text-[10px] text-zinc-500 uppercase mt-1">
-                      {(noteFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB total
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                      {(noteFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB Total
                     </p>
                   </div>
-                ) : (
-                  <>
-                    <Upload className="w-8 h-8 text-zinc-500 group-hover:text-indigo-400 mb-4 transition-colors" />
-                    <p className="text-zinc-200 font-bold">Select PDF/Images</p>
-                    <p className="text-xs text-zinc-500 mt-2">Up to 50MB supported</p>
-                  </>
                 )}
-                <input 
-                  type="file" 
-                  accept=".pdf,.doc,.docx,image/*" 
-                  multiple
-                  onChange={handleNoteFileChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer" 
-                />
               </div>
-            </div>
 
             <div className="space-y-4">
               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover (Optional)</label>

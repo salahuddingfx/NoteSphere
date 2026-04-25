@@ -66,16 +66,20 @@ const createNote = asyncHandler(async (req, res) => {
 
   const noteFiles = req.files.file;
   const coverFiles = req.files.cover || [];
-
-  // For now, we take the first file as the primary note asset
-  // In the future, we could support multiple file uploads
-  const mainFile = noteFiles[0];
   
   const slug = await generateUniqueSlug(title);
   
-  // Upload main file to Cloudinary
-  const uploadResult = await uploadToCloudinary(mainFile.buffer, mainFile.mimetype);
+  // Upload all note files to Cloudinary
+  const uploadPromises = noteFiles.map(file => uploadToCloudinary(file.buffer, file.mimetype));
+  const uploadResults = await Promise.all(uploadPromises);
   
+  // Map results to attachments array
+  const attachments = uploadResults.map((result, index) => ({
+    url: result.secure_url,
+    publicId: result.public_id,
+    fileType: inferNoteFileType(noteFiles[index].mimetype)
+  }));
+
   // Upload cover image if provided
   let coverUrl = "";
   if (coverFiles.length > 0) {
@@ -93,10 +97,11 @@ const createNote = asyncHandler(async (req, res) => {
     title,
     slug,
     description,
-    fileUrl: uploadResult.secure_url,
+    fileUrl: attachments[0].url, // Primary asset for backward compatibility
     coverUrl: coverUrl,
-    publicId: uploadResult.public_id,
-    fileType: inferNoteFileType(mainFile.mimetype),
+    publicId: attachments[0].publicId, // Primary public ID
+    fileType: attachments[0].fileType,
+    attachments,
     department,
     semester,
     subject,

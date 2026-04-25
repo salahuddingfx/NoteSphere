@@ -92,6 +92,11 @@ const noteSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    attachments: [{
+      url: { type: String, required: true },
+      publicId: { type: String, required: true },
+      fileType: { type: String, enum: ["pdf", "image", "text"], required: true }
+    }],
     isVerified: {
       type: Boolean,
       default: false,
