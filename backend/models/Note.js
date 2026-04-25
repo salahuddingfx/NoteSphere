@@ -101,6 +101,10 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isPublic: {
+      type: Boolean,
+      default: true,
+    },
     aiSummary: {
       type: String,
       trim: true,

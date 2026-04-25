@@ -54,7 +54,7 @@ const inferNoteFileType = (mimetype) => {
 };
 
 const createNote = asyncHandler(async (req, res) => {
-  const { title, description, department, semester, subject, subjectCode, teacher, category, tags } = req.body;
+  const { title, description, department, semester, subject, subjectCode, teacher, category, tags, isPublic } = req.body;
 
   if (!req.files || !req.files.file || req.files.file.length === 0) {
     throw new ApiError(400, "At least one note file is required");
@@ -109,6 +109,7 @@ const createNote = asyncHandler(async (req, res) => {
     teacher,
     category: category || "Digital",
     tags: normalizedTags,
+    isPublic: isPublic !== undefined ? String(isPublic) === "true" : true,
     author: req.user._id,
   });
 

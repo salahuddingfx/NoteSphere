@@ -5,8 +5,8 @@ import Image from "next/image";
 import MainNav from "@/components/ui/MainNav";
 import ImageCropper from "@/components/upload/ImageCropper";
 import CustomSelect from "@/components/ui/CustomSelect";
-import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X, Wand2, Camera, Share2 } from "lucide-react";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Sparkles, Image as ImageIcon, X, Wand2, Camera, Share2, Volume2, VolumeX, Lock, Globe } from "lucide-react";
 import confetti from "canvas-confetti";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -36,7 +36,15 @@ export default function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [showXP, setShowXP] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPageLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -147,6 +155,26 @@ export default function UploadPage() {
     }
   };
 
+  const handleSpeak = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    if (!description) return;
+    const utterance = new SpeechSynthesisUtterance(description);
+    utterance.onend = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleReorder = (newPreviews: any[]) => {
+    // Find the new order of noteFiles based on names in newPreviews
+    const newNoteFiles = newPreviews.map(p => noteFiles.find(f => f.name === p.name)).filter(Boolean) as File[];
+    setPreviews(newPreviews);
+    setNoteFiles(newNoteFiles);
+  };
+
   const triggerCamera = () => {
     cameraInputRef.current?.click();
   };
@@ -170,6 +198,7 @@ export default function UploadPage() {
       
       formData.append("category", category);
       formData.append("tags", tagList.join(","));
+      formData.append("isPublic", String(isPublic));
       
       // Append all note files
       noteFiles.forEach(file => {
@@ -213,6 +242,17 @@ export default function UploadPage() {
       setLoading(false);
     }
   };
+
+  if (pageLoading) {
+    return (
+      <main className="min-h-screen bg-black px-4 py-12 flex items-center justify-center">
+         <div className="space-y-4 text-center">
+            <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mx-auto" />
+            <p className="text-zinc-500 font-bold uppercase tracking-widest animate-pulse">Initializing Vault...</p>
+         </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-black px-4 py-12 sm:px-6 lg:px-10">
@@ -305,14 +345,23 @@ export default function UploadPage() {
                 <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
                   Description <span className="text-red-500">*</span>
                 </label>
-                <button 
-                  onClick={handleAiSuggest}
-                  disabled={suggesting}
-                  className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-tighter hover:bg-indigo-500/20 transition-all border border-indigo-500/20 disabled:opacity-50"
-                >
-                  {suggesting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                  {suggesting ? "Magic working..." : "Magic Enhance"}
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={handleSpeak}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 text-zinc-400 text-[10px] font-bold uppercase hover:bg-white/10 transition-all border border-white/10"
+                  >
+                    {isSpeaking ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                    {isSpeaking ? "Stop" : "Listen"}
+                  </button>
+                  <button 
+                    onClick={handleAiSuggest}
+                    disabled={suggesting}
+                    className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-tighter hover:bg-indigo-500/20 transition-all border border-indigo-500/20 disabled:opacity-50"
+                  >
+                    {suggesting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                    {suggesting ? "Magic working..." : "Magic Enhance"}
+                  </button>
+                </div>
               </div>
               <textarea 
                 rows={4}
@@ -331,7 +380,28 @@ export default function UploadPage() {
                 onChange={setCategory} 
               />
               <div className="space-y-4">
-                <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Tags (Press Enter)</label>
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Visibility</label>
+                </div>
+                <div className="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10">
+                   <button 
+                    onClick={() => setIsPublic(true)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${isPublic ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
+                   >
+                     <Globe className="w-3 h-3" /> Public
+                   </button>
+                   <button 
+                    onClick={() => setIsPublic(false)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${!isPublic ? 'bg-indigo-500 text-white' : 'text-zinc-500 hover:text-white'}`}
+                   >
+                     <Lock className="w-3 h-3" /> Private
+                   </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Tags (Press Enter)</label>
                 <div className="flex flex-wrap gap-2 p-2 rounded-2xl border border-white/10 bg-white/5 min-h-[56px] focus-within:border-indigo-500 transition-colors">
                   <AnimatePresence>
                     {tagList.map((tag) => (
@@ -365,10 +435,13 @@ export default function UploadPage() {
           <div className="lg:col-span-2 space-y-8">
               <div className="space-y-4">
                 <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
-                  Note Assets (PDF/DOC/Images) <span className="text-red-500">*</span>
+                  Note Assets (Drag to reorder) <span className="text-red-500">*</span>
                 </label>
                 
-                <div 
+                <Reorder.Group 
+                  axis="y" 
+                  values={previews} 
+                  onReorder={handleReorder}
                   className={`grid grid-cols-2 gap-3 p-3 rounded-3xl border-2 border-dashed transition-all ${isDragging ? 'border-indigo-500 bg-indigo-500/10' : 'border-white/10 bg-white/5'}`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -376,12 +449,13 @@ export default function UploadPage() {
                 >
                   <AnimatePresence>
                     {previews.map((preview, index) => (
-                      <motion.div 
-                        key={index}
+                      <Reorder.Item 
+                        key={preview.name} 
+                        value={preview}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="relative aspect-square rounded-2xl bg-white/5 border border-white/10 overflow-hidden group"
+                        className="relative aspect-square rounded-2xl bg-white/5 border border-white/10 overflow-hidden group cursor-grab active:cursor-grabbing"
                       >
                         {preview.url ? (
                           <Image 
@@ -399,15 +473,15 @@ export default function UploadPage() {
                         )}
                         <button 
                           onClick={() => removeFile(index)}
-                          className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                          className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
                         >
                           <X className="w-3 h-3" />
                         </button>
-                      </motion.div>
+                      </Reorder.Item>
                     ))}
                   </AnimatePresence>
                   
-                  <div className="relative aspect-square rounded-2xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-4 text-center group hover:border-indigo-500 transition-colors cursor-pointer overflow-hidden">
+                  <div className="relative aspect-square rounded-2xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-4 text-center group hover:border-indigo-500 transition-colors cursor-pointer overflow-hidden min-h-[120px]">
                     <Upload className="w-6 h-6 text-zinc-500 group-hover:text-indigo-400 mb-2 transition-colors" />
                     <p className="text-[10px] text-zinc-400 font-bold">Add Files</p>
                     <input 
@@ -418,7 +492,7 @@ export default function UploadPage() {
                       className="absolute inset-0 opacity-0 cursor-pointer" 
                     />
                   </div>
-                </div>
+                </Reorder.Group>
                 
                 {noteFiles.length > 0 && (
                   <div className="flex justify-between items-center px-2">
