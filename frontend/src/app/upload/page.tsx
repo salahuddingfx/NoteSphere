@@ -12,6 +12,8 @@ import imageCompression from "browser-image-compression";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
+import { QRCodeSVG } from "qrcode.react";
+import { Copy, ExternalLink, QrCode } from "lucide-react";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -41,6 +43,8 @@ export default function UploadPage() {
   const [isPublic, setIsPublic] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [uploadedNote, setUploadedNote] = useState<any>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -86,6 +90,35 @@ export default function UploadPage() {
     }
   };
 
+  const addWatermark = async (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const img = new (window as any).Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+          ctx.font = `${Math.round(img.width / 25)}px sans-serif`;
+          ctx.textAlign = "right";
+          ctx.fillText("NoteSphere", img.width - 40, img.height - 40);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(new File([blob], file.name, { type: "image/jpeg" }));
+            } else {
+              resolve(file);
+            }
+          }, "image/jpeg", 0.9);
+        } else {
+          resolve(file);
+        }
+      };
+    });
+  };
+
   const handleNoteFiles = async (files: File[]) => {
     const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
     const processedFiles: File[] = [];
@@ -105,7 +138,8 @@ export default function UploadPage() {
             useWebWorker: true,
           };
           const compressedFile = await imageCompression(file, options);
-          processedFiles.push(compressedFile);
+          const watermarkedFile = await addWatermark(compressedFile);
+          processedFiles.push(watermarkedFile);
         } else {
           processedFiles.push(file);
         }
@@ -331,7 +365,11 @@ export default function UploadPage() {
         },
       });
 
-      // Celebration and XP Logic
+      const newNote = res.data.note;
+      setUploadedNote(newNote);
+      
+      localStorage.removeItem("note_upload_draft");
+      
       confetti({
         particleCount: 150,
         spread: 70,
@@ -339,12 +377,8 @@ export default function UploadPage() {
         colors: ["#6366f1", "#a855f7", "#ffffff"]
       });
       
-      localStorage.removeItem("note_upload_draft");
-      
       setShowXP(true);
-      setTimeout(() => {
-        router.push("/notes");
-      }, 2000);
+      setShowSuccessModal(true);
     } catch (err) {
       console.error("Upload failed", err);
       alert("Upload failed. Check console.");
@@ -783,6 +817,64 @@ export default function UploadPage() {
             }} 
             onCancel={() => setIsCropping(false)}
           />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSuccessModal && uploadedNote && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[100] flex items-center justify-center p-4 overflow-y-auto"
+          >
+             <motion.div 
+               initial={{ scale: 0.9, y: 20 }}
+               animate={{ scale: 1, y: 0 }}
+               className="bg-zinc-900 border border-white/10 p-8 rounded-[40px] max-w-lg w-full text-center relative shadow-[0_0_100px_rgba(99,102,241,0.2)]"
+             >
+                <div className="h-20 w-20 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 mx-auto mb-6">
+                   <CheckCircle className="w-10 h-10" />
+                </div>
+                
+                <h2 className="text-3xl font-black text-white mb-2">Note Vaulted! 🚀</h2>
+                <p className="text-zinc-500 mb-8 font-medium">Your knowledge is now part of the NoteSphere network.</p>
+                
+                <div className="bg-white p-4 rounded-3xl inline-block mb-8 shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+                   <QRCodeSVG 
+                     value={`${window.location.origin}/notes/${uploadedNote.slug}`} 
+                     size={160}
+                     level="H"
+                   />
+                </div>
+                
+                <div className="flex flex-col gap-3">
+                   <button 
+                     onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/notes/${uploadedNote.slug}`);
+                        showToast("Link copied to clipboard!", "success");
+                     }}
+                     className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all"
+                   >
+                     <Copy className="w-4 h-4" /> Copy Share Link
+                   </button>
+                   <div className="grid grid-cols-2 gap-3">
+                      <button 
+                        onClick={() => router.push(`/notes/${uploadedNote.slug}`)}
+                        className="flex items-center justify-center gap-3 py-4 rounded-2xl bg-indigo-500 text-white font-bold hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20"
+                      >
+                        <ExternalLink className="w-4 h-4" /> View Note
+                      </button>
+                      <button 
+                        onClick={() => router.push("/notes")}
+                        className="flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all"
+                      >
+                        Go to Hub
+                      </button>
+                   </div>
+                </div>
+             </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </main>
