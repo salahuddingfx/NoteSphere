@@ -189,84 +189,83 @@ export default function UploadPage() {
           </div>
 
           <div className="lg:col-span-2 space-y-8">
-             <div className="space-y-4">
-               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
-                 Note Asset (PDF/DOC) <span className="text-red-500">*</span>
-               </label>
-               <div className="aspect-video rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
-                  {noteFiles.length > 0 ? (
-                    <div className="flex flex-col items-center">
-                       <FileText className="w-10 h-10 text-indigo-400 mb-2" />
-                       <p className="text-white font-bold truncate max-w-[200px]">
-                         {noteFiles.length === 1 ? noteFiles[0].name : `${noteFiles.length} files selected`}
-                       </p>
-                       <p className="text-[10px] text-zinc-500 uppercase mt-1">
-                         {(noteFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB total
-                       </p>
-                    </div>
-                  ) : (
-                    <>
-                      <Upload className="w-8 h-8 text-zinc-500 group-hover:text-indigo-400 mb-4 transition-colors" />
-                      <p className="text-zinc-200 font-bold">Select PDF/Images</p>
-                      <p className="text-xs text-zinc-500 mt-2">Up to 50MB supported</p>
-                    </>
-                  )}
-                  <input 
-                    type="file" 
-                    accept=".pdf,.doc,.docx,image/*" 
-                    multiple
-                    onChange={handleNoteFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer" 
-                  />
-               </div>
-             </div>
+            <div className="space-y-4">
+              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
+                Note Asset (PDF/DOC) <span className="text-red-500">*</span>
+              </label>
+              <div className="aspect-video rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
+                {noteFiles.length > 0 ? (
+                  <div className="flex flex-col items-center">
+                    <FileText className="w-10 h-10 text-indigo-400 mb-2" />
+                    <p className="text-white font-bold truncate max-w-[200px]">
+                      {noteFiles.length === 1 ? noteFiles[0].name : `${noteFiles.length} files selected`}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 uppercase mt-1">
+                      {(noteFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB total
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-zinc-500 group-hover:text-indigo-400 mb-4 transition-colors" />
+                    <p className="text-zinc-200 font-bold">Select PDF/Images</p>
+                    <p className="text-xs text-zinc-500 mt-2">Up to 50MB supported</p>
+                  </>
+                )}
+                <input 
+                  type="file" 
+                  accept=".pdf,.doc,.docx,image/*" 
+                  multiple
+                  onChange={handleNoteFileChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer" 
+                />
+              </div>
+            </div>
 
-             <div className="space-y-4">
-               <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover (Optional)</label>
-               <div className="aspect-[3/4] rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
-                  {croppedImage ? (
-                    <Image 
-                      src={croppedImage} 
-                      alt="Preview" 
-                      fill
-                      className="absolute inset-0 w-full h-full object-cover" 
-                      unoptimized
-                    />
-                  ) : (
-                    <>
-                      <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
-                        <ImageIcon className="w-6 h-6 text-zinc-400 group-hover:text-indigo-400" />
-                      </div>
-                      <p className="text-zinc-200 font-bold">Select Cover</p>
-                    </>
-                  )}
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleImageChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer" 
+            <div className="space-y-4">
+              <label className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Note Cover (Optional)</label>
+              <div className="aspect-[3/4] rounded-3xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center p-6 text-center group hover:border-indigo-500 transition-colors cursor-pointer relative overflow-hidden">
+                {croppedImage ? (
+                  <Image 
+                    src={croppedImage} 
+                    alt="Preview" 
+                    fill
+                    className="absolute inset-0 w-full h-full object-cover" 
+                    unoptimized
                   />
-               </div>
-             </div>
+                ) : (
+                  <>
+                    <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
+                      <ImageIcon className="w-6 h-6 text-zinc-400 group-hover:text-indigo-400" />
+                    </div>
+                    <p className="text-zinc-200 font-bold">Select Cover</p>
+                  </>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer" 
+                />
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="mt-12 flex justify-end">
-           <button 
+          <button 
             disabled={loading}
             onClick={handleSubmit}
             className="group px-12 py-4 rounded-2xl bg-white text-black font-black hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center gap-3 disabled:opacity-50 disabled:scale-100"
-           >
-             {loading ? (
-               <Loader2 className="w-5 h-5 animate-spin" />
-             ) : (
-               <CheckCircle className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
-             )}
-             {loading ? "Publishing..." : "Submit to Vault"}
-           </button>
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <CheckCircle className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
+            )}
+            {loading ? "Publishing..." : "Submit to Vault"}
+          </button>
         </div>
       </section>
-
 
       <AnimatePresence>
         {isCropping && selectedFile && (
