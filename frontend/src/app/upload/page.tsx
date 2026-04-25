@@ -123,6 +123,7 @@ export default function UploadPage() {
       setSubject(SUBJECT_MAP[upperCode]);
     }
   };
+  const handleAiSuggest = async () => {
     if (!title && !subject) {
       showToast("Add a title or subject first to use AI magic!", "error");
       return;
