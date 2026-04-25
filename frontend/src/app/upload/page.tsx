@@ -547,6 +547,7 @@ export default function UploadPage() {
                 />
             </div>
           </div>
+          </div>
         </div>
 
         <div className="mt-12 space-y-6">
