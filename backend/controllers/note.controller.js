@@ -399,6 +399,57 @@ const generateSummary = asyncHandler(async (req, res) => {
 });
 
 
+const suggestMetadata = asyncHandler(async (req, res) => {
+  const { title, subject, subjectCode, teacher } = req.body;
+
+  if (!title && !subject) {
+    throw new ApiError(400, "Please provide at least a title or subject to get suggestions.");
+  }
+
+  const prompt = `Suggest a professional 2-3 sentence description and 5-6 relevant keywords (tags) for an academic note with these details:
+  Title: ${title || "N/A"}
+  Subject: ${subject || "N/A"}
+  Code: ${subjectCode || "N/A"}
+  Teacher: ${teacher || "N/A"}
+  
+  Format the response exactly like this JSON:
+  {
+    "description": "...",
+    "tags": ["tag1", "tag2", ...]
+  }`;
+
+  try {
+    const Setting = require("../models/Setting");
+    const settings = await Setting.findOne();
+    const modelToUse = settings?.activeModel || DEFAULT_MODEL;
+
+    const response = await openai.chat.completions.create({
+      model: modelToUse,
+      messages: [
+        {
+          role: "system",
+          content: "You are an AI that helps students organize their academic notes. Return only JSON."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    const suggestions = JSON.parse(response.choices[0].message.content);
+
+    res.status(200).json({
+      success: true,
+      suggestions
+    });
+  } catch (error) {
+    console.error("AI Error:", error);
+    throw new ApiError(500, "Failed to get AI suggestions");
+  }
+});
+
 module.exports = {
   createNote,
   getNotes,
@@ -408,5 +459,6 @@ module.exports = {
   toggleLike,
   trackDownload,
   generateSummary,
+  suggestMetadata,
 };
 
