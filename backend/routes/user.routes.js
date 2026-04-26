@@ -1,5 +1,5 @@
 const express = require("express");
-const { getLeaderboard, updateProfile, uploadAvatarPhoto, getContributionStats, getMyNotes, toggleSaveNote, getSavedNotes, getUserProfile } = require("../controllers/user.controller");
+const { getLeaderboard, updateProfile, uploadAvatarPhoto, getContributionStats, getMyNotes, toggleSaveNote, getSavedNotes, getUserProfile, rewardXp } = require("../controllers/user.controller");
 
 const { protect } = require("../middlewares/auth.middleware");
 const uploadAvatar = require("../middlewares/uploadAvatar");
