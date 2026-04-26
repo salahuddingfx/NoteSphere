@@ -69,47 +69,49 @@ export default function ContributionChart() {
               <div className="h-8 w-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
            </div>
         ) : data.length > 0 ? (
-          <div className="h-full w-full" style={{ minHeight: '300px' }}>
-            <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-              <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorNotes" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: "#666", fontSize: 10, fontWeight: "bold" }}
-                  dy={10}
-                />
-                <YAxis hide />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "#0a0a0a", 
-                    border: "1px solid #ffffff10", 
-                    borderRadius: "16px",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    color: "#fff" 
-                  }}
-                  itemStyle={{ color: "#6366f1" }}
-                  cursor={{ stroke: "#6366f1", strokeWidth: 1, strokeDasharray: "5 5" }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="notes"
-                  stroke="#6366f1"
-                  strokeWidth={4}
-                  fillOpacity={1}
-                  fill="url(#colorNotes)"
-                  animationDuration={1500}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-full w-full">
+            {mounted && (
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorNotes" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: "#666", fontSize: 10, fontWeight: "bold" }}
+                    dy={10}
+                  />
+                  <YAxis hide />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: "#0a0a0a", 
+                      border: "1px solid #ffffff10", 
+                      borderRadius: "16px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      color: "#fff" 
+                    }}
+                    itemStyle={{ color: "#6366f1" }}
+                    cursor={{ stroke: "#6366f1", strokeWidth: 1, strokeDasharray: "5 5" }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="notes"
+                    stroke="#6366f1"
+                    strokeWidth={4}
+                    fillOpacity={1}
+                    fill="url(#colorNotes)"
+                    animationDuration={1500}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
         ) : (
