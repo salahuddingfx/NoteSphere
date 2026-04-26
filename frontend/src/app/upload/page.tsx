@@ -369,6 +369,22 @@ export default function UploadPage() {
       
       localStorage.removeItem("note_upload_draft");
       
+      // Add to recently viewed
+      const recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+      const updatedRecently = [
+        {
+          _id: newNote._id,
+          slug: newNote.slug,
+          title: newNote.title,
+          subject: newNote.subject,
+          subjectCode: newNote.subjectCode,
+          fileType: newNote.fileType,
+          isVerified: newNote.isVerified
+        },
+        ...recentlyViewed.filter((n: any) => n._id !== newNote._id)
+      ].slice(0, 4);
+      localStorage.setItem("recentlyViewed", JSON.stringify(updatedRecently));
+      
       confetti({
         particleCount: 150,
         spread: 70,
