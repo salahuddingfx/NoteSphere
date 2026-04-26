@@ -92,8 +92,13 @@ export default function NoteContent() {
           ].slice(0, 4);
           localStorage.setItem("recentlyViewed", JSON.stringify(updated));
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Failed to fetch note", err);
+        if (err.response?.status === 404) {
+          const recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+          const updated = recentlyViewed.filter((n: any) => n.slug !== slug);
+          localStorage.setItem("recentlyViewed", JSON.stringify(updated));
+        }
       } finally {
         setLoading(false);
       }
