@@ -203,6 +203,24 @@ const getUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
+const rewardXp = asyncHandler(async (req, res) => {
+  const { xp, reason } = req.body;
+  const user = await User.findById(req.user.id);
+  
+  if (!user) throw new ApiError(404, "User not found");
+
+  user.xp += xp;
+  user.level = Math.floor(user.xp / 500) + 1;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: `Earned ${xp} XP for ${reason}`,
+    xp: user.xp,
+    level: user.level
+  });
+});
+
 module.exports = {
   getLeaderboard,
   updateProfile,
@@ -211,7 +229,8 @@ module.exports = {
   getMyNotes,
   toggleSaveNote,
   getSavedNotes,
-  getUserProfile
+  getUserProfile,
+  rewardXp
 };
 
 
