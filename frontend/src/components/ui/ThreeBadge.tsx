@@ -56,7 +56,7 @@ function BadgeModel({ rank }: { rank: string }) {
 
 export default function ThreeBadge({ rank }: BadgeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: false, amount: 0.1 });
+  const isInView = useInView(containerRef, { once: false, amount: 0.5 });
 
   return (
     <div ref={containerRef} className="h-48 w-48 relative">
@@ -67,11 +67,19 @@ export default function ThreeBadge({ rank }: BadgeProps) {
          <Canvas 
           shadows 
           camera={{ position: [0, 0, 4], fov: 50 }}
-          gl={{ powerPreference: "low-power", antialias: false }}
+          gl={{ 
+            powerPreference: "low-power", 
+            antialias: false,
+            failIfMajorPerformanceCaveat: true,
+            preserveDrawingBuffer: false
+          }}
           onCreated={({ gl }) => {
             gl.domElement.addEventListener('webglcontextlost', (event) => {
               event.preventDefault();
               console.warn('ThreeBadge: WebGL context lost.');
+            }, false);
+            gl.domElement.addEventListener('webglcontextrestored', () => {
+              window.location.reload(); // Hard reset on restoration failure
             }, false);
           }}
          >
