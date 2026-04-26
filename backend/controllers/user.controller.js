@@ -144,7 +144,7 @@ const getContributionStats = asyncHandler(async (req, res) => {
 });
 
 const getMyNotes = asyncHandler(async (req, res) => {
-  const notes = await Note.find({ author: req.user.id }).sort({ createdAt: -1 });
+  const notes = await Note.find({ author: req.user._id }).sort({ createdAt: -1 });
   res.status(200).json({ success: true, notes });
 });
 
