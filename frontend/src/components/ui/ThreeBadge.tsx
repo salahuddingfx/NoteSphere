@@ -57,13 +57,14 @@ function BadgeModel({ rank }: { rank: string }) {
 export default function ThreeBadge({ rank }: BadgeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: false, amount: 0.5 });
+  const [hasError, setHasError] = useState(false);
 
   return (
     <div ref={containerRef} className="h-48 w-48 relative">
        {/* Glow Effect */}
        <div className="absolute inset-0 bg-indigo-500/10 blur-[50px] rounded-full animate-pulse" />
        
-       {isInView ? (
+       {isInView && !hasError ? (
          <Canvas 
           shadows 
           camera={{ position: [0, 0, 4], fov: 50 }}
@@ -76,12 +77,11 @@ export default function ThreeBadge({ rank }: BadgeProps) {
           onCreated={({ gl }) => {
             gl.domElement.addEventListener('webglcontextlost', (event) => {
               event.preventDefault();
+              setHasError(true);
               console.warn('ThreeBadge: WebGL context lost.');
             }, false);
-            gl.domElement.addEventListener('webglcontextrestored', () => {
-              window.location.reload(); // Hard reset on restoration failure
-            }, false);
           }}
+          onError={() => setHasError(true)}
          >
             <ambientLight intensity={0.5} />
             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
@@ -93,7 +93,14 @@ export default function ThreeBadge({ rank }: BadgeProps) {
          </Canvas>
        ) : (
          <div className="h-full w-full flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+            {hasError ? (
+              <div className="flex flex-col items-center gap-2">
+                 <div className="text-5xl opacity-80 filter grayscale brightness-150 drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]">🏅</div>
+                 <p className="text-[8px] font-black uppercase tracking-widest text-zinc-600">Nexus Artifact</p>
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+            )}
          </div>
        )}
     </div>
