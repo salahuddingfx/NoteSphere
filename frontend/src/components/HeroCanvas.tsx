@@ -32,8 +32,11 @@ function AnimatedSphere() {
   );
 }
 
+import { useInView } from "framer-motion";
+
 export default function HeroCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -47,29 +50,31 @@ export default function HeroCanvas() {
 
   return (
     <div ref={containerRef} className="absolute inset-0 -z-10 h-full w-full">
-      <Canvas 
-        dpr={[1, 1.5]} 
-        gl={{ 
-          antialias: false, 
-          powerPreference: "high-performance",
-          preserveDrawingBuffer: false
-        }}
-        onCreated={({ gl }) => {
-          gl.domElement.addEventListener('webglcontextlost', (event) => {
-            event.preventDefault();
-            console.warn('HeroCanvas: WebGL context lost.');
-          }, false);
-          gl.domElement.addEventListener('webglcontextrestored', () => {
-            console.log('HeroCanvas: WebGL context restored.');
-          }, false);
-        }}
-        camera={{ position: [0, 0, 5], fov: 75 }}
-      >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <pointLight position={[-10, -10, -5]} intensity={0.5} color="#06b6d4" />
-        <AnimatedSphere />
-      </Canvas>
+      {isInView && (
+        <Canvas 
+          dpr={[1, 1.5]} 
+          gl={{ 
+            antialias: false, 
+            powerPreference: "low-power",
+            preserveDrawingBuffer: false
+          }}
+          onCreated={({ gl }) => {
+            gl.domElement.addEventListener('webglcontextlost', (event) => {
+              event.preventDefault();
+              console.warn('HeroCanvas: WebGL context lost.');
+            }, false);
+            gl.domElement.addEventListener('webglcontextrestored', () => {
+              console.log('HeroCanvas: WebGL context restored.');
+            }, false);
+          }}
+          camera={{ position: [0, 0, 5], fov: 75 }}
+        >
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <pointLight position={[-10, -10, -5]} intensity={0.5} color="#06b6d4" />
+          <AnimatedSphere />
+        </Canvas>
+      )}
     </div>
   );
 }
