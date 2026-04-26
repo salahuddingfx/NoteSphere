@@ -2,8 +2,9 @@
 
 import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, MeshDistortMaterial, MeshWobbleMaterial, OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { Float, MeshDistortMaterial, MeshWobbleMaterial, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import { useInView } from "framer-motion";
 
 interface BadgeProps {
   rank: string;
@@ -54,20 +55,39 @@ function BadgeModel({ rank }: { rank: string }) {
 }
 
 export default function ThreeBadge({ rank }: BadgeProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: false, amount: 0.1 });
+
   return (
-    <div className="h-48 w-48 relative">
+    <div ref={containerRef} className="h-48 w-48 relative">
        {/* Glow Effect */}
        <div className="absolute inset-0 bg-indigo-500/10 blur-[50px] rounded-full animate-pulse" />
        
-       <Canvas shadows camera={{ position: [0, 0, 4], fov: 50 }}>
-          <ambientLight intensity={0.5} />
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-          <pointLight position={[-10, -10, -10]} />
-          
-          <BadgeModel rank={rank} />
-          
-          <OrbitControls enableZoom={false} enablePan={false} />
-       </Canvas>
+       {isInView ? (
+         <Canvas 
+          shadows 
+          camera={{ position: [0, 0, 4], fov: 50 }}
+          gl={{ powerPreference: "low-power", antialias: false }}
+          onCreated={({ gl }) => {
+            gl.domElement.addEventListener('webglcontextlost', (event) => {
+              event.preventDefault();
+              console.warn('ThreeBadge: WebGL context lost.');
+            }, false);
+          }}
+         >
+            <ambientLight intensity={0.5} />
+            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+            <pointLight position={[-10, -10, -10]} />
+            
+            <BadgeModel rank={rank} />
+            
+            <OrbitControls enableZoom={false} enablePan={false} />
+         </Canvas>
+       ) : (
+         <div className="h-full w-full flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+         </div>
+       )}
     </div>
   );
 }
