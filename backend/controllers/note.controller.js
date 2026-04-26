@@ -384,7 +384,11 @@ const generateSummary = asyncHandler(async (req, res) => {
     });
 
 
-    const summary = response.choices[0].message.content;
+    const summary = response.choices[0]?.message?.content;
+
+    if (!summary) {
+      throw new ApiError(500, "AI returned an empty summary");
+    }
 
     note.aiSummary = summary;
     await note.save();
@@ -394,8 +398,12 @@ const generateSummary = asyncHandler(async (req, res) => {
       summary,
     });
   } catch (error) {
-    console.error("OpenRouter Error:", error);
-    throw new ApiError(500, "Failed to generate AI summary via OpenRouter");
+    console.error("AI Summary Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.status
+    });
+    throw new ApiError(500, error.message || "Failed to generate AI summary");
   }
 });
 
@@ -439,15 +447,29 @@ const suggestMetadata = asyncHandler(async (req, res) => {
       response_format: { type: "json_object" }
     });
 
-    const suggestions = JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0]?.message?.content;
+    
+    if (!content) {
+      throw new ApiError(500, "AI provider returned an empty response.");
+    }
 
-    res.status(200).json({
-      success: true,
-      suggestions
-    });
+    try {
+      const suggestions = JSON.parse(content);
+      res.status(200).json({
+        success: true,
+        suggestions
+      });
+    } catch (parseError) {
+      console.error("AI JSON Parse Error. Content received:", content);
+      throw new ApiError(500, "AI returned invalid data format. Please try again.");
+    }
   } catch (error) {
-    console.error("AI Error:", error);
-    throw new ApiError(500, "Failed to get AI suggestions");
+    console.error("AI Suggestion Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.status
+    });
+    throw new ApiError(500, `AI Error: ${error.message || "Failed to get suggestions"}`);
   }
 });
 
