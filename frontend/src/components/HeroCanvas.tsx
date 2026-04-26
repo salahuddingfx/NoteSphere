@@ -49,7 +49,20 @@ export default function HeroCanvas() {
     <div ref={containerRef} className="absolute inset-0 -z-10 h-full w-full">
       <Canvas 
         dpr={[1, 1.5]} 
-        gl={{ antialias: false, powerPreference: "high-performance" }}
+        gl={{ 
+          antialias: false, 
+          powerPreference: "high-performance",
+          preserveDrawingBuffer: false
+        }}
+        onCreated={({ gl }) => {
+          gl.domElement.addEventListener('webglcontextlost', (event) => {
+            event.preventDefault();
+            console.warn('HeroCanvas: WebGL context lost.');
+          }, false);
+          gl.domElement.addEventListener('webglcontextrestored', () => {
+            console.log('HeroCanvas: WebGL context restored.');
+          }, false);
+        }}
         camera={{ position: [0, 0, 5], fov: 75 }}
       >
         <ambientLight intensity={0.5} />
