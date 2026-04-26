@@ -104,6 +104,7 @@ export default function DashboardPage() {
                   height={128}
                   className="h-full w-full rounded-[2.5rem] object-cover ring-4 ring-indigo-500/20"
                   unoptimized
+                  priority
                 />
 
                 <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl">
