@@ -114,10 +114,16 @@ const createNote = asyncHandler(async (req, res) => {
   });
 
 
-  // Badge Awarding Logic
+  // Award XP for contributing
   const User = require("../models/User");
   const user = await User.findById(req.user._id);
   
+  if (user) {
+    user.xp += 100;
+    user.level = Math.floor(user.xp / 500) + 1;
+    await user.save();
+  }
+
   const subjectCount = await Note.countDocuments({ 
     author: user._id, 
     subject: subject 
