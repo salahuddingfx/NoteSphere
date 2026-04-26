@@ -66,13 +66,28 @@ export default function NoteSummary({ noteId, initialSummary }: NoteSummaryProps
 
         <div className="flex gap-2">
            {summary && (
-              <button 
-                onClick={handleSpeak}
-                className={`p-3 rounded-xl border transition-all ${isSpeaking ? 'bg-indigo-500 border-indigo-400 text-white animate-pulse' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'}`}
-                title={isSpeaking ? "Stop Reading" : "Read Aloud"}
-              >
-                {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              </button>
+              <div className="flex items-center gap-3">
+                {isSpeaking && (
+                  <div className="flex gap-1 h-4 items-end">
+                    {[0.6, 0.4, 0.8, 0.5].map((h, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ height: ["20%", "100%", "20%"] }}
+                        transition={{ duration: h, repeat: Infinity, ease: "easeInOut" }}
+                        className="w-1 bg-indigo-500 rounded-full"
+                      />
+                    ))}
+                  </div>
+                )}
+                <button 
+                  onClick={handleSpeak}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all ${isSpeaking ? 'bg-indigo-500 border-indigo-400 text-white shadow-lg shadow-indigo-500/20' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'}`}
+                  title={isSpeaking ? "Stop Reading" : "Read Aloud"}
+                >
+                  {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  <span className="text-[9px] font-black uppercase tracking-widest">{isSpeaking ? 'Stop' : 'Listen'}</span>
+                </button>
+              </div>
            )}
            {!summary && !loading && (
              <button
