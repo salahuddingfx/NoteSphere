@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, notFound } from "next/navigation";
 import MainNav from "@/components/ui/MainNav";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -197,12 +197,10 @@ export default function NoteContent() {
     </div>
   );
 
-  if (!note) return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
-      <h1 className="text-2xl font-bold">Note not found</h1>
-      <button onClick={() => router.back()} className="mt-4 text-indigo-400 font-bold uppercase tracking-widest text-xs">Go Back</button>
-    </div>
-  );
+  if (!note) {
+    notFound();
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-black px-4 py-12 sm:px-6 lg:px-10">

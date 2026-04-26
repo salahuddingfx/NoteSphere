@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { getUserRank } from "@/lib/ranks";
@@ -43,8 +43,7 @@ export default function ProfileContent() {
         setNotes(data.notes);
       } catch (err) {
         console.error("Profile not found", err);
-        showToast("Nexus identity not found in the vault.", "error");
-        router.push("/");
+        notFound();
       } finally {
         setLoading(false);
       }
