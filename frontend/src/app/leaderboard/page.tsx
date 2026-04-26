@@ -138,6 +138,7 @@ export default function LeaderboardPage() {
                                   height={80}
                                   className="h-full w-full rounded-[1.4rem] object-cover" 
                                   unoptimized
+                                  priority={idx < 3}
                                 />
                               </div>
                             </div>
