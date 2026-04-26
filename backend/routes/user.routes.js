@@ -15,6 +15,7 @@ router.get("/stats", protect, getContributionStats);
 router.get("/notes", protect, getMyNotes);
 router.post("/save-note", protect, toggleSaveNote);
 router.get("/saved-notes", protect, getSavedNotes);
+router.post("/reward-xp", protect, rewardXp);
 
 
 module.exports = router;
