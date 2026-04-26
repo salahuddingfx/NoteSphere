@@ -2,9 +2,10 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshDistortMaterial, Sphere } from "@react-three/drei";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import gsap from "gsap";
+import { useInView } from "framer-motion";
 
 function AnimatedSphere() {
   const meshRef = useRef<THREE.Mesh>(null!);
@@ -19,7 +20,6 @@ function AnimatedSphere() {
     <Float speed={2} rotationIntensity={1} floatIntensity={2}>
       <Sphere ref={meshRef} args={[1, 64, 64]} scale={2.4}>
         <MeshDistortMaterial
-
           color="#4338ca"
           attach="material"
           distort={0.4}
@@ -32,11 +32,10 @@ function AnimatedSphere() {
   );
 }
 
-import { useInView } from "framer-motion";
-
 export default function HeroCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -49,24 +48,23 @@ export default function HeroCanvas() {
   }, []);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 -z-10 h-full w-full">
-      {isInView && (
+    <div ref={containerRef} className="absolute inset-0 -z-10 h-full w-full overflow-hidden">
+      {isInView && !hasError ? (
         <Canvas 
           dpr={[1, 1.5]} 
           gl={{ 
             antialias: false, 
             powerPreference: "low-power",
-            preserveDrawingBuffer: false
+            failIfMajorPerformanceCaveat: true
           }}
           onCreated={({ gl }) => {
             gl.domElement.addEventListener('webglcontextlost', (event) => {
               event.preventDefault();
+              setHasError(true);
               console.warn('HeroCanvas: WebGL context lost.');
             }, false);
-            gl.domElement.addEventListener('webglcontextrestored', () => {
-              console.log('HeroCanvas: WebGL context restored.');
-            }, false);
           }}
+          onError={() => setHasError(true)}
           camera={{ position: [0, 0, 5], fov: 75 }}
         >
           <ambientLight intensity={0.5} />
@@ -74,6 +72,14 @@ export default function HeroCanvas() {
           <pointLight position={[-10, -10, -5]} intensity={0.5} color="#06b6d4" />
           <AnimatedSphere />
         </Canvas>
+      ) : (
+        <div className="absolute inset-0 bg-black">
+           <div className="absolute inset-0 opacity-30">
+              <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600 rounded-full blur-[120px] animate-pulse" />
+              <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-600 rounded-full blur-[120px] animate-pulse delay-700" />
+           </div>
+           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_70%)]" />
+        </div>
       )}
     </div>
   );
