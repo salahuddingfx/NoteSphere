@@ -14,6 +14,8 @@ import { useToast } from "@/components/ui/Toast";
 import CommentSection from "@/components/notes/CommentSection";
 import LearningPath from "@/components/notes/LearningPath";
 import QuizGenerator from "@/components/notes/QuizGenerator";
+import FlashcardDeck from "@/components/notes/FlashcardDeck";
+import FocusTimer from "@/components/notes/FocusTimer";
 import Link from "next/link";
 
 
@@ -277,6 +279,7 @@ export default function NoteContent() {
             </div>
 
             <NoteSummary noteId={note._id} initialSummary={note.aiSummary} />
+            <FlashcardDeck note={note} />
             <QuizGenerator note={note} />
             <CommentSection noteId={note._id} />
           </div>
@@ -399,10 +402,11 @@ export default function NoteContent() {
                      Erase from Nexus
                    </button>
                  )}
-               </div>
-            </div>
-            <LearningPath note={note} />
-          </aside>
+                </div>
+             </div>
+             <FocusTimer />
+             <LearningPath note={note} />
+           </aside>
         </div>
       </section>
     </main>
