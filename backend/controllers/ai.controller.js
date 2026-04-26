@@ -175,10 +175,39 @@ const generateQuiz = asyncHandler(async (req, res) => {
 });
 
 
+const generateFlashcards = asyncHandler(async (req, res) => {
+  const { title, subject, description } = req.body;
+
+  const prompt = `Create a set of study flashcards for the academic note: "${title}" (Subject: ${subject}).
+  
+  Description: ${description}
+
+  Provide exactly 8 flashcards (front/back) in the following JSON format:
+  {
+    "flashcards": [
+      {
+        "front": "...",
+        "back": "..."
+      },
+      ...
+    ]
+  }
+  Respond ONLY with the JSON. The front should be a question or term, and the back should be the answer or definition.`;
+
+  try {
+    const response = await tryRequestWithFallback(prompt, "You are an expert academic tutor who responds in JSON.");
+    const flashcards = JSON.parse(response.choices[0].message.content);
+    res.status(200).json({ success: true, flashcards });
+  } catch (err) {
+    throw new ApiError(500, "Failed to synchronize flashcards from the Nexus: " + err.message);
+  }
+});
+
 module.exports = {
   chatWithAI,
   generateLearningPath,
-  generateQuiz
+  generateQuiz,
+  generateFlashcards
 };
 
 
