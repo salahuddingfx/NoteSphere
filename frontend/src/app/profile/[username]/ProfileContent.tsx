@@ -84,6 +84,7 @@ export default function ProfileContent() {
                       height={160}
                       className="h-full w-full rounded-[3rem] object-cover ring-4 ring-indigo-500/20"
                       unoptimized
+                      priority
                     />
                     <div className="absolute -bottom-2 -right-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-2xl">
                        <Zap className="h-6 w-6" />
